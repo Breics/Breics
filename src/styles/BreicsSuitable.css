@@ -1,0 +1,131 @@
+.suitable-section {
+    padding: 60px 40px;
+    background: #fff;
+    text-align: center;
+}
+
+.suitable-section h5 {
+    font-size: 0.9rem;
+    color: #999;
+    margin-bottom: 10px;
+}
+
+.suitable-section h2 {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 40px;
+}
+
+.audience-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+
+.audience-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 300px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+    text-align: left;
+}
+
+.audience-card:hover {
+    transform: translateY(-5px);
+}
+
+.audience-card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.audience-card h3 {
+    font-size: 1rem;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+.audience-card p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* First Extra Section */
+.extra-section.first-extra {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-top: 60px;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+}
+
+.extra-section.first-extra .extra-image img {
+    max-width: 100%;
+    border-radius: 12px;
+}
+
+.extra-section.first-extra .extra-text {
+    max-width: 500px;
+}
+
+.extra-section.first-extra .extra-text h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.extra-section.first-extra .extra-text p {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+
+
+.responsive-pair {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 50px;
+    gap: 20px;
+    justify-content: center;
+
+}
+
+.responsive-box {
+    flex: 1 1 30%;
+    background: #f1f1f1;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.responsive-box button {
+    margin-bottom: 10px;
+    width: 11rem;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #F89822;
+    background: #FEE7CD;
+    margin-top: 10px;
+
+}
+.responsive-box h3 {
+    margin-bottom: 10px;
+}
+
+.responsive-box p {
+    color: #555;
+}
+
+/* Stack on small screens */
+@media (max-width: 768px) {
+    .responsive-box {
+        flex: 1 1 100%;
+    }
+}

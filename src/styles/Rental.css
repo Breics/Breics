@@ -1,0 +1,53 @@
+.RentalSection {
+    width: 100%;
+    height: 250px;
+    background-color: #2372BA;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+
+}
+
+.RentalSection div {
+    text-align: center;
+}
+
+.RentalSection h3 {
+    font-family: Roboto;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+
+
+}
+
+.RentalSection p {
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    color: #FFFFFF;
+    margin-bottom: 30px;
+}
+.RentalSection button {
+    background-color: #F89822;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    color: #FFFFFF;
+    width: 200px;
+
+
+}
+a {
+    color: #FFFFFF;
+    text-decoration: none;
+}

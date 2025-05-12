@@ -1,0 +1,39 @@
+.stats {
+    background: #2372BA;
+    color: white;
+    padding: 3rem 1rem;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+    text-align: left;
+  }
+  
+  .stat-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 250px;
+  }
+  
+  .stat-box .icon {
+    font-size: 2rem;
+    color: white;
+  }
+  
+  .stat-box h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .stat-box span {
+    font-weight: bold;
+  }
+  
+  .stat-box p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0.2rem 0 0;
+  }
+  

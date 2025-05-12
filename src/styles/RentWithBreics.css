@@ -1,0 +1,133 @@
+.rent-section {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    padding: 60px;
+    background-color: #FFFFFF;
+    color: #0e010162;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  
+  .rent-text {
+    flex: 1;
+  }
+  
+  .subheading {
+    font-size: 12px;
+    color: #aaa;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  
+  .rent-text h2 {
+    font-size: 36px;
+    font-weight: 800;
+    color: #fca311;
+    margin-bottom: 16px;
+  }
+  
+  .rent-text .intro {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  
+  .benefit {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .benefit .icon {
+    color: #fca311;
+    font-size: 24px;
+    margin-top: 4px;
+  }
+  
+  .benefit h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .benefit p {
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.5;
+  }
+  
+  .rent-images {
+    flex: 1;
+    position: relative;
+  }
+  
+  .main-img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+  
+  .overlay-img {
+    position: absolute;
+    bottom: -20px;
+    left: 20px;
+    width: 220px;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    border: 6px solid #fff;
+  }
+  @media (max-width: 1024px) {
+    .rent-section {
+      flex-direction: column;
+      padding: 40px 20px;
+    }
+  
+    .rent-text h2 {
+      font-size: 28px;
+    }
+  
+    .benefit {
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .rent-images {
+      margin-top: 30px;
+      width: 100%;
+    }
+  
+    .main-img {
+      width: 100%;
+    }
+  
+    .overlay-img {
+      position: static;
+      display: block;
+      margin: 20px auto 0;
+      width: 80%;
+      max-width: 300px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .rent-text h2 {
+      font-size: 24px;
+    }
+  
+    .rent-text .intro,
+    .benefit h4,
+    .benefit p {
+      font-size: 14px;
+    }
+  
+    .benefit p {
+      font-size: 13px;
+    }
+  
+    .overlay-img {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+  

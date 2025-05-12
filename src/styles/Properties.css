@@ -1,0 +1,34 @@
+.property-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .property-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    transition: transform 0.3s;
+  }
+  
+  .property-card:hover {
+    transform: scale(1.02);
+  }
+  
+  .property-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .property-info {
+    padding: 10px;
+  }
+  
+  .property-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
