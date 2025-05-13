@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/Login.css";
 import axios from "axios";
+
+axios.defaults.withCredentials = true; // allows cookies from PHP backend
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +16,18 @@ const Login = () => {
     agree: false,
   });
   const [error, setError] = useState("");
+
+  // Check if user already logged in
+  useEffect(() => {
+    axios
+      .get("http://localhost/PHPDB/check-session.php")
+      .then((res) => {
+        if (res.data.loggedIn) {
+          window.location.href = "/dashboard";
+        }
+      })
+      .catch((err) => console.error("Session check failed:", err));
+  }, []);
 
   const toggleMode = () => {
     setError("");
@@ -51,47 +65,48 @@ const Login = () => {
     }
 
     try {
-      const url = isLogin ? "/api/login" : "/api/signup";
+      const url = isLogin
+        ? "http://localhost/PHPDB/login.php"
+        : "http://localhost/PHPDB/signup.php";
+
       const payload = isLogin
         ? { email: formData.email, password: formData.password }
-        : formData;
+        : {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            phone: formData.phone,
+            email: formData.email,
+            password: formData.password,
+          };
 
-      const response = await axios.post(url, payload);
+      const response = await axios.post(url, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (response.data.success) {
-        // Store JWT token in local storage or state
-        localStorage.setItem('authToken', response.data.token);
         window.location.href = "/dashboard";
       } else {
-        setError(response.data.message || "Login failed");
+        setError(response.data.message || "Something went wrong");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Server error");
+      console.error(err);
+      setError("Server error. Please try again.");
     }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <button
-          className="go-back"
-          onClick={() => (window.location.href = "/")}
-        >
+        <button className="go-back" onClick={() => (window.location.href = "/")}>
           ← Go back
         </button>
-        <h2>Sign in to Breics</h2>
+        <h2>{isLogin ? "Sign in to Breics" : "Create a Breics account"}</h2>
         <div className="tabs">
-          <button
-            className={isLogin ? "active" : ""}
-            onClick={() => setIsLogin(true)}
-          >
+          <button className={isLogin ? "active" : ""} onClick={() => setIsLogin(true)}>
             Log In
           </button>
-          <button
-            className={!isLogin ? "active" : ""}
-            onClick={() => setIsLogin(false)}
-          >
-            Sign up
+          <button className={!isLogin ? "active" : ""} onClick={() => setIsLogin(false)}>
+            Sign Up
           </button>
         </div>
 
@@ -170,6 +185,7 @@ const Login = () => {
               Forgot Password?
             </a>
           )}
+
           {error && <div className="error-box">{error}</div>}
 
           <button type="submit" className="submit-btn">

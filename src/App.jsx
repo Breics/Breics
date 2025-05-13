@@ -6,6 +6,7 @@ import Login from "./Pages/Login"
 import ForgotPassword from "./Pages/Forgot"
 import ResetPassword from "./Pages/Reset"
 import Dashboard from "./Pages/Dashboard"
+import VerifyAccount from "./Pages/verifyPage"
 function App() {
   
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/forgot-password" element = {< ForgotPassword/>} />
           <Route path="/reset-password" element = {< ResetPassword/>} />
           <Route path="/dashboard" element = {< Dashboard/>} />
+          <Route path="/verify-account" element = { <VerifyAccount />} />
 
 
         </Routes>
