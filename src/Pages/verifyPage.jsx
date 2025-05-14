@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import "../styles/VerifyPage.css";
-import {  FaLock } from "react-icons/fa";
+import {FaLock } from "react-icons/fa";
 import Navbar from "../components/Dashboard/DasNavbar";
+import { useNavigate } from 'react-router-dom';
+
 
 const VerifyAccount = () => {
+    const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "Akorede",
     lastName: "Adeleke",
@@ -130,7 +133,7 @@ const VerifyAccount = () => {
               </div>
             </div>
 
-            <button type="submit" className="verify-submit-btn">
+            <button type="submit" className="verify-submit-btn" onClick={() => navigate('/verify-id')}>
               Save and continue
             </button>
           </form>

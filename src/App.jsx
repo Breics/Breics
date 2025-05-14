@@ -7,6 +7,7 @@ import ForgotPassword from "./Pages/Forgot"
 import ResetPassword from "./Pages/Reset"
 import Dashboard from "./Pages/Dashboard"
 import VerifyAccount from "./Pages/verifyPage"
+import IDVerification from "./Pages/IDVerification"
 function App() {
   
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/reset-password" element = {< ResetPassword/>} />
           <Route path="/dashboard" element = {< Dashboard/>} />
           <Route path="/verify-account" element = { <VerifyAccount />} />
+          <Route path="/verify-id" element = { <IDVerification />} />
 
 
         </Routes>
