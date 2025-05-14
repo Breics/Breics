@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../styles/VerifyPage.css";
-import { FaCalendarAlt, FaLock } from "react-icons/fa";
+import {  FaLock } from "react-icons/fa";
 import Navbar from "../components/Dashboard/DasNavbar";
 
 const VerifyAccount = () => {
@@ -114,7 +114,7 @@ const VerifyAccount = () => {
                     onChange={handleChange}
                     required
                   />
-                  <FaCalendarAlt className="calendar-icon" />
+                  
                 </div>
               </div>
 
