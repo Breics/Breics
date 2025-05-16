@@ -1,5 +1,17 @@
 .dashboard-container {
     padding: 1.5rem;
+    animation: fadeSlide 0.4s ease;
+  }
+  
+  @keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   .dashboard-header h1 {
@@ -27,6 +39,7 @@
     flex: 1;
     min-width: 240px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    animation: fadeSlide 0.4s ease;
   }
   
   .applications-section {
@@ -47,6 +60,7 @@
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.03);
+    animation: fadeSlide 0.4s ease;
   }
   
   .application-info {
