@@ -17,10 +17,10 @@ const Login = () => {
   });
   const [error, setError] = useState("");
 
-  // Check if user already logged in
+  // Check if user is already logged in
   useEffect(() => {
     axios
-      .get("http://localhost/PHPDB/check-session.php")
+      .get("http://localhost/breics-backend/backk/process_login.php")
       .then((res) => {
         if (res.data.loggedIn) {
           window.location.href = "/dashboard";
@@ -66,27 +66,27 @@ const Login = () => {
 
     try {
       const url = isLogin
-        ? "http://localhost/PHPDB/login.php"
-        : "http://localhost/PHPDB/signup.php";
+        ? "http://localhost/breics-backend/backk/process_login.php"
+        : "http://localhost/breics-backend/backk/process_signup.php";
 
-      const payload = isLogin
-        ? { email: formData.email, password: formData.password }
-        : {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phone: formData.phone,
-            email: formData.email,
-            password: formData.password,
-          };
+      const form = new FormData();
+      if (isLogin) {
+        form.append("email", formData.email);
+        form.append("password", formData.password);
+      } else {
+        form.append("firstName", formData.firstName);
+        form.append("lastName", formData.lastName);
+        form.append("phone", formData.phone);
+        form.append("email", formData.email);
+        form.append("password", formData.password);
+      }
 
-      const response = await axios.post(url, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axios.post(url, form);
 
       if (response.data.success) {
         window.location.href = "/dashboard";
       } else {
-        setError(response.data.message || "Something went wrong");
+        setError(response.data.message || "Invalid credentials or server error.");
       }
     } catch (err) {
       console.error(err);
