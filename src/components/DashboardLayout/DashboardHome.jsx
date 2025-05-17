@@ -1,97 +1,53 @@
+import React, { useEffect, useState } from 'react';
+import ChartCard from './DashCard';
 
-import React from "react";
-import { FaHome, FaMoneyBill, FaUsers, FaTicketAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import '../../styles/DashboardHome.css'
+const Dashboard = () => {
+  const [dashboardData, setDashboardData] = useState(null);
 
-const StatCard = ({ title, total, breakdown }) => (
-  <div className="stat-card">
-    <div className="circle">{total}</div>
-    <h4>{title}</h4>
-    <ul>
-      {breakdown.map((item, i) => (
-        <li key={i}>
-          <span className={`dot ${item.color}`}></span> {item.label}: {item.value}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+  useEffect(() => {
+    fetch('http://localhost:5000/api/dashboard-data') // Replace with your actual endpoint
+      .then(res => res.json())
+      .then(data => setDashboardData(data))
+      .catch(err => console.error(err));
+  }, []);
 
-const ApplicationCard = ({ title, user, date }) => (
-  <div className="app-card">
-    <div>
-      <img src="https://via.placeholder.com/40" alt="apartment" />
-      <div className="app-info">
-        <strong>{title}</strong>
-        <span>{user}</span>
-      </div>
-    </div>
-    <span>{date}</span>
-    <Link to="/applications/view">View</Link>
-  </div>
-);
+  if (!dashboardData) return <p style={{ padding: '2rem' }}>Loading dashboard...</p>;
 
-const DashboardHome = () => {
+  const { totalProperties, rentalIncome, tenants, tickets } = dashboardData;
+
   return (
-    <div className="dashboard-container">
+    <div style={{ padding: '2rem' }}>
       <h2>Hi Shehu 👋</h2>
-      <h3>Dashboard</h3>
+      <h1>Dashboard</h1>
 
-      <div className="stats-grid">
-        <StatCard
+      <div className="cards" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+        <ChartCard
           title="Total Properties"
-          total={22}
-          breakdown={[
-            { label: "Occupied properties", value: 12, color: "green" },
-            { label: "Vacant properties", value: 2, color: "grey" },
-            { label: "Pending verification", value: 8, color: "red" },
-          ]}
+          labels={['Occupied', 'Vacant', 'Pending']}
+          dataValues={[totalProperties.occupied, totalProperties.vacant, totalProperties.pending]}
+          colors={['#5cb85c', '#5bc0de', '#f0ad4e']}
         />
-        <StatCard
+        <ChartCard
           title="Rental Income"
-          total={"₦ 6,100,000"}
-          breakdown={[
-            { label: "Paid rent", value: "₦ 4,000,000", color: "green" },
-            { label: "Overdue rent", value: "₦ 2,100,000", color: "red" },
-          ]}
+          labels={['Paid', 'Overdue']}
+          dataValues={[rentalIncome.paid, rentalIncome.overdue]}
+          colors={['#5cb85c', '#d9534f']}
         />
-        <StatCard
+        <ChartCard
           title="Tenants"
-          total={22}
-          breakdown={[
-            { label: "Active Tenants", value: 16, color: "green" },
-            { label: "Inactive Tenants", value: 6, color: "red" },
-          ]}
+          labels={['Active', 'Inactive']}
+          dataValues={[tenants.active, tenants.inactive]}
+          colors={['#5cb85c', '#f0ad4e']}
         />
-        <StatCard
+        <ChartCard
           title="Tickets"
-          total={12}
-          breakdown={[
-            { label: "Open tickets", value: 10, color: "green" },
-            { label: "Closed tickets", value: 2, color: "red" },
-          ]}
+          labels={['Open', 'Closed']}
+          dataValues={[tickets.open, tickets.closed]}
+          colors={['#5bc0de', '#d9534f']}
         />
-      </div>
-
-      <div className="applications-box">
-        <div className="tabs">
-          <strong>Applications</strong>
-          <span className="badge">4</span>
-        </div>
-        <div className="apps-list">
-          {[1, 2, 3, 4].map((_, i) => (
-            <ApplicationCard
-              key={i}
-              title="Fully Furnished 2 Bedroom"
-              user="Imade Imhavu"
-              date="02/09/2021"
-            />
-          ))}
-        </div>
       </div>
     </div>
   );
 };
 
-export default DashboardHome;
+export default Dashboard;

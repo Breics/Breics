@@ -20,7 +20,7 @@ const Login = () => {
   // Check if user is already logged in
   useEffect(() => {
     axios
-      .get("http://localhost/breics-backend/backk/process_login.php")
+      .get("http://localhost/breics-backend/process_login.php")
       .then((res) => {
         if (res.data.loggedIn) {
           window.location.href = "/dashboard";
@@ -66,8 +66,8 @@ const Login = () => {
 
     try {
       const url = isLogin
-        ? "http://localhost/breics-backend/backk/process_login.php"
-        : "http://localhost/breics-backend/backk/process_signup.php";
+        ? "http://localhost/breics-backend/process_login.php"
+        : "http://localhost/breics-backend/process_signup.php";
 
       const form = new FormData();
       if (isLogin) {
