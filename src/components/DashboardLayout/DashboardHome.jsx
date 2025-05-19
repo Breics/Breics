@@ -1,17 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import ChartCard from './DashCard';
 
+// Static fallback data
+const defaultDashboardData = {
+  totalProperties: {
+    total: 22,
+    occupied: 12,
+    vacant: 2,
+    pending: 8
+  },
+  rentalIncome: {
+    paid: 4000000,
+    overdue: 2100000
+  },
+  tenants: {
+    total: 22,
+    active: 16,
+    inactive: 6
+  },
+  tickets: {
+    total: 12,
+    open: 10,
+    closed: 2
+  }
+};
+
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardData, setDashboardData] = useState(defaultDashboardData);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/dashboard-data') // Replace with your actual endpoint
-      .then(res => res.json())
-      .then(data => setDashboardData(data))
-      .catch(err => console.error(err));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/dashboard-data');
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        setDashboardData(data);
+      } catch (error) {
+        console.warn('Using fallback data, backend not reachable:', error.message);
+        // Keeps defaultDashboardData
+      }
+    };
 
-  if (!dashboardData) return <p style={{ padding: '2rem' }}>Loading dashboard...</p>;
+    fetchData();
+  }, []);
 
   const { totalProperties, rentalIncome, tenants, tickets } = dashboardData;
 
