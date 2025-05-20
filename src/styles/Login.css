@@ -113,3 +113,20 @@ input[type="tel"] {
 .go-back:hover {
     text-decoration: underline;
 }
+
+.spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #fff;
+    border-top: 3px solid orange;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
