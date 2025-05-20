@@ -50,17 +50,35 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+  
     try {
       if (isLogin) {
         const res = await axios.post("http://localhost/breicsk/backk/process_login.php", {
           email: formData.email,
           password: formData.password,
         });
+  
+        const {  status, message, redirect_url, user_id } = res.data;
+        console.log("Login response:", res.data);  // 👈 add this line
 
-        const { status, message, redirect_url } = res.data;
+  
+        if (status  === "success") {
+          // Store user_id
+          localStorage.setItem("user_id", user_id);
+  
+          // Fetch full user data
+          console.log("Calling fetch_user.php with user_id:", user_id);
 
-        if (status === "success") {
+          const userRes = await axios.post("http://localhost/breicsk/backk/get_user_info.php", {
+            user_id: user_id,
+          });
+  
+          if (userRes.data.success) {
+            const fullName = userRes.data.data.full_name;
+            localStorage.setItem("full_name", fullName);
+            alert(`Hello ${fullName}`);
+          }
+  
           window.location.href = "/" + redirect_url;
         } else if (status === "unverified") {
           setError("Please verify your email before logging in.");
@@ -72,9 +90,9 @@ const Login = () => {
           ...formData,
           accept_terms: formData.accept_terms ? "1" : "0",
         });
-
+  
         const { status, message } = res.data;
-
+  
         if (status === "success") {
           alert(message);
           setMode("login");
@@ -89,6 +107,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="auth-container">
