@@ -77,15 +77,19 @@ const VerifyAccount = () => {
       })
       .then((res) => {
         if (res.data.success) {
+          alert("Updated successfully")
           // On successful update, navigate to the next step (e.g. ID verification)
           navigate("/verify-id");
         } else {
+          console.log(res.data.message)
           setError(res.data.message || "Update failed.");
         }
       })
-      .catch((err) => {
-        console.error("Update error:", err);
-        setError("Update failed. Please try again.");
+      .catch((error) => {
+        console.error("Update error:", error);
+        if (error.response) {
+          console.error("Backend response error:", error.response.data);
+        }
       })
       .finally(() => {
         setLoading(false);
