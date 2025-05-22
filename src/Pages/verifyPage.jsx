@@ -65,32 +65,27 @@ const VerifyAccount = () => {
     setLoading(true);
     
     // Update user details API endpoint (make sure your backend has this implemented)
-    axios
-      .post("http://localhost/breicsk/backk/update_user.php", {
-        user_id: localStorage.getItem("user_id"),
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        phone_number: formData.phone, // Assume backend expects phone_number
-        email: formData.email,
-        dob: formData.dob,
-        occupation: formData.occupation,
-      })
-      .then((res) => {
-        if (res.data.success) {
-          alert("Updated successfully")
-          // On successful update, navigate to the next step (e.g. ID verification)
-          navigate("/verify-id");
-        } else {
-          console.log(res.data.message)
-          setError(res.data.message || "Update failed.");
-        }
-      })
-      .catch((error) => {
-        console.error("Update error:", error);
-        if (error.response) {
-          console.error("Backend response error:", error.response.data);
-        }
-      })
+    axios.post("http://localhost/breicsk/backk/update_user.php", {
+      user_id: localStorage.getItem("user_id"),
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      phone_number: formData.phone,
+      dob: formData.dob,
+      occupation: formData.occupation,
+    }, { withCredentials: true }) // Important if cookies are involved
+    .then((res) => {
+      console.log(res.data)
+      if (res.data.success) {
+        alert("Updated successfully");
+        navigate("/verify-id");
+      } else {
+        setError(res.data.message || "Update failed.");
+      }
+    })
+    .catch((error) => {
+      console.error("Update error:", error);
+    })
+    
       .finally(() => {
         setLoading(false);
       });
