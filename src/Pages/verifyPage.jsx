@@ -70,12 +70,12 @@ const VerifyAccount = () => {
       first_name: formData.firstName,
       last_name: formData.lastName,
       phone_number: formData.phone,
-      dob: formData.dob,
-      occupation: formData.occupation,
+      // dob: formData.dob,
+      // occupation: formData.occupation,
     }, { withCredentials: true }) // Important if cookies are involved
     .then((res) => {
-      console.log(res.data)
       if (res.data.success) {
+        console.log(res.data)
         alert("Updated successfully");
         navigate("/verify-id");
       } else {
