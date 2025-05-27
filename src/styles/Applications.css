@@ -1,0 +1,39 @@
+.applications {
+    padding: 20px;
+    flex: 1;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .status.rejected {
+    color: red;
+  }
+  
+  .status.accepted {
+    color: green;
+  }
+  
+  .payment.pending {
+    color: gray;
+  }
+  
+  .payment.paid {
+    color: green;
+  }
+  
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  

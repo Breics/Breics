@@ -69,7 +69,7 @@ const VerifyAccount = () => {
       user_id: localStorage.getItem("user_id"),
       first_name: formData.firstName,
       last_name: formData.lastName,
-      phone_number: formData.phone,
+      // phone_number: formData.phone
       // dob: formData.dob,
       // occupation: formData.occupation,
     }, { withCredentials: true }) // Important if cookies are involved
@@ -188,7 +188,7 @@ const VerifyAccount = () => {
             </div>
 
             <button type="submit" className="verify-submit-btn" disabled={loading}>
-              {loading ? "Saving..." : "Save and continue"}
+              {loading ? "Saving..." : "Save and Continue"}
             </button>
           </form>
         </section>

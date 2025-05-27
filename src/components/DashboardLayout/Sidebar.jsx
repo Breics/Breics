@@ -17,8 +17,8 @@ import "../../styles/Sidebar.css";
 const navItems = [
   { label: "Dashboard", icon: <FiGrid />, path: "/dashboard/dashboard-home" },
   { label: "Application", icon: <FiFileText />, path: "/dashboard/application" },
-  { label: "My Properties", icon: <FiHome />, path: "/properties" },
-  { label: "My Tenants", icon: <FiUsers />, path: "/tenants" },
+  { label: "My Properties", icon: <FiHome />, path: "/dashboard/properties" },
+  { label: "My Tenants", icon: <FiUsers />, path: "/dashboard/tenants" },
   { label: "Payments", icon: <FiCreditCard />, path: "/payments" },
   { label: "Facility", icon: <FiServer />, path: "/facility" },
   { label: "Administration", icon: <FiUserCheck />, path: "/admin" },

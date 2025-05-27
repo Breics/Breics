@@ -11,6 +11,8 @@ import IDVerification from "./Pages/IDVerification";
 import DashboardLayout from "./Pages/DashboardLayOut";
 import DashboardHome from "./components/DashboardLayout/DashboardHome";
 import Application from "./components/DashboardLayout/Application";
+import MyProperties from "./components/DashboardLayout/Properties";
+import TenantDashboard from "./components/DashboardLayout/Tenants";
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
           <Route index element={<DashboardHome />} />
           <Route path="dashboard-home" element={<DashboardHome />} />
           <Route path="application" element={<Application />} />
+          <Route path="properties" element={<MyProperties />} />
+          <Route path="tenants" element={<TenantDashboard />} />
         </Route>
       </Routes>
     </Router>

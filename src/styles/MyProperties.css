@@ -1,0 +1,183 @@
+/* MyProperties.css */
+
+.properties-container {
+    font-family: 'Inter', sans-serif;
+    padding: 20px 30px;
+    background-color: #f9f9fb;
+    color: #333;
+  }
+  
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .action-buttons button {
+    margin-left: 10px;
+    padding: 8px 14px;
+    border: 1px solid #ff9f1c;
+    background-color: white;
+    color: #ff9f1c;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .action-buttons .new-btn {
+    background-color: #ff9f1c;
+    color: white;
+  }
+  
+  .stats-row {
+    display: flex;
+    gap: 20px;
+    margin: 25px 0;
+  }
+  
+  .stat-card {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    flex: 1;
+  }
+  
+  .stat-card .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .stat-card .home {
+    background-color: #ffe4c6;
+  }
+  
+  .stat-card .occupied {
+    background-color: #c9f7f5;
+  }
+  
+  .stat-card .unoccupied {
+    background-color: #ffe2e5;
+  }
+  
+  .stat-card h4 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .stat-card p {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+  }
+  
+  .table-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .table-controls input,
+  .table-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  
+  .submit-btn {
+    background-color: #ff9f1c;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .property-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  }
+  
+  .property-table th, .property-table td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+  
+  .property-table img {
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    object-fit: cover;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  
+  .property-table td span {
+    vertical-align: middle;
+  }
+  
+  .tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+  }
+  
+  .verified {
+    background-color: #dcfce7;
+    color: #027a48;
+  }
+  
+  .unverified {
+    background-color: #fde2e4;
+    color: #b42318;
+  }
+  
+  .occupied {
+    background-color: #e0f4ff;
+    color: #0073e6;
+  }
+  
+  .vacant {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  .dots {
+    cursor: pointer;
+    font-size: 18px;
+    display: inline-block;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  
+  .pagination button {
+    margin-left: 5px;
+    padding: 5px 12px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
