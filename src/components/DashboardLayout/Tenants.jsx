@@ -1,26 +1,27 @@
 import React from "react";
 import "../../styles/Tenants.css";
+import landlordImage from '../../image/land.jpg';
 
 const tenants = [
   {
     name: "Shehu Omotosho",
     id: "BR345009",
     phone: "09017556160",
-    avatar: "https://via.placeholder.com/80",
+    img: {landlordImage},
     rentExpiry: "30/09/2021",
   },
   {
     name: "Shehu Omotosho",
     id: "BR345009",
     phone: "09017556160",
-    avatar: "https://via.placeholder.com/80",
+    img: {landlordImage},
     rentExpiry: "30/09/2021",
   },
   {
     name: "Shehu Omotosho",
     id: "BR345009",
     phone: "09017556160",
-    avatar: "https://via.placeholder.com/80",
+    img: {landlordImage},
     rentExpiry: "30/09/2021",
   },
 ];
@@ -78,7 +79,7 @@ const TenantDashboard = () => {
         {tenants.map((t, i) => (
           <div className="tenant-card" key={i}>
             <div className="card-header">
-              <img className="avatar" src={t.avatar} alt="avatar" />
+              <img className="avatar" src={landlordImage} alt="avatar" />
               <button className="card-menu">...</button>
               <div className="menu-dropdown">
                 <ul>

@@ -19,7 +19,7 @@ const navItems = [
   { label: "Application", icon: <FiFileText />, path: "/dashboard/application" },
   { label: "My Properties", icon: <FiHome />, path: "/dashboard/properties" },
   { label: "My Tenants", icon: <FiUsers />, path: "/dashboard/tenants" },
-  { label: "Payments", icon: <FiCreditCard />, path: "/payments" },
+  { label: "Payments", icon: <FiCreditCard />, path: "/dashboard/payments" },
   { label: "Facility", icon: <FiServer />, path: "/facility" },
   { label: "Administration", icon: <FiUserCheck />, path: "/admin" },
   { label: "Support", icon: <FiSettings />, path: "/support" },

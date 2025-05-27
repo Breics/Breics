@@ -1,5 +1,6 @@
 import React from "react";
 import "../../styles/MyProperties.css";
+import landlordImage from '../../image/land.jpg';
 
 const properties = [
   {
@@ -9,7 +10,7 @@ const properties = [
     rent: "₦ 500,000/month",
     verified: false,
     occupied: false,
-    img: "https://via.placeholder.com/60x60",
+    img: {landlordImage},
   },
   {
     title: "Fully Furnished 2 Bedroom En-suite Apartment",
@@ -18,7 +19,7 @@ const properties = [
     rent: "₦ 500,000/month",
     verified: false,
     occupied: false,
-    img: "https://via.placeholder.com/60x60",
+    img: {landlordImage},
   },
   {
     title: "Fully Furnished 2 Bedroom En-suite Apartment",
@@ -27,7 +28,7 @@ const properties = [
     rent: "₦ 500,000/month",
     verified: true,
     occupied: true,
-    img: "https://via.placeholder.com/60x60",
+    img: {landlordImage},
   },
   {
     title: "Fully Furnished 2 Bedroom En-suite Apartment",
@@ -36,7 +37,7 @@ const properties = [
     rent: "₦ 500,000/month",
     verified: true,
     occupied: false,
-    img: "https://via.placeholder.com/60x60",
+    img: {landlordImage},
   },
   {
     title: "Fully Furnished 2 Bedroom En-suite Apartment",
@@ -45,7 +46,7 @@ const properties = [
     rent: "₦ 500,000/month",
     verified: true,
     occupied: true,
-    img: "https://via.placeholder.com/60x60",
+    img: {landlordImage},
   },
 ];
 
@@ -107,7 +108,7 @@ const MyProperties = () => {
         <tbody>
           {properties.map((p, i) => (
             <tr key={i}>
-              <td><img src={p.img} alt="apt" /><span>{p.title}</span></td>
+              <td><img src={landlordImage} alt="apt" /><span>{p.title}</span></td>
               <td>{p.location}</td>
               <td>{p.type}</td>
               <td>{p.rent}</td>

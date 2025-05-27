@@ -13,6 +13,7 @@ import DashboardHome from "./components/DashboardLayout/DashboardHome";
 import Application from "./components/DashboardLayout/Application";
 import MyProperties from "./components/DashboardLayout/Properties";
 import TenantDashboard from "./components/DashboardLayout/Tenants";
+import Payments from "./components/DashboardLayout/Payments";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="application" element={<Application />} />
           <Route path="properties" element={<MyProperties />} />
           <Route path="tenants" element={<TenantDashboard />} />
+          <Route path="payments" element={<Payments/>} />
         </Route>
       </Routes>
     </Router>
