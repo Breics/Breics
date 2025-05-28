@@ -20,8 +20,8 @@ const navItems = [
   { label: "My Properties", icon: <FiHome />, path: "/dashboard/properties" },
   { label: "My Tenants", icon: <FiUsers />, path: "/dashboard/tenants" },
   { label: "Payments", icon: <FiCreditCard />, path: "/dashboard/payments" },
-  { label: "Facility", icon: <FiServer />, path: "/facility" },
-  { label: "Administration", icon: <FiUserCheck />, path: "/admin" },
+  { label: "Facility", icon: <FiServer />, path: "/dashboard/facility" },
+  { label: "Administration", icon: <FiUserCheck />, path: "/dashboard/admin" },
   { label: "Support", icon: <FiSettings />, path: "/support" },
   { label: "Account", icon: <FiUser />, path: "/account" }
 ];

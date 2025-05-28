@@ -14,6 +14,8 @@ import Application from "./components/DashboardLayout/Application";
 import MyProperties from "./components/DashboardLayout/Properties";
 import TenantDashboard from "./components/DashboardLayout/Tenants";
 import Payments from "./components/DashboardLayout/Payments";
+import Adminstrator from "./components/DashboardLayout/Adminstrator";
+import FacilityDashboard from "./components/DashboardLayout/Facility";
 
 function App() {
   return (
@@ -37,6 +39,9 @@ function App() {
           <Route path="properties" element={<MyProperties />} />
           <Route path="tenants" element={<TenantDashboard />} />
           <Route path="payments" element={<Payments/>} />
+          <Route path="admin" element={<Adminstrator/>} />
+          <Route path="facility" element={<FacilityDashboard/>} />
+
         </Route>
       </Routes>
     </Router>
