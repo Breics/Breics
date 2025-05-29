@@ -7,8 +7,6 @@ import axios from "axios";
 
 const VerifyAccount = () => {
   const navigate = useNavigate();
-  
-  // Initialize state. Defaults will be replaced by fetched user details.
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -17,39 +15,33 @@ const VerifyAccount = () => {
     dob: "",
     occupation: "",
   });
-  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // When component mounts, fetch existing user details via backend API.
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
+
     if (userId) {
       axios
-        .post("http://localhost/breicsk/backk/get_user_info.php", { user_id: userId })
+        .get(`http://localhost:5000/api/user/${userId}`, { withCredentials: true })
         .then((res) => {
-          if (res.data.success && res.data.data) {
-            const { full_name, email, phone_number } = res.data.data;
-            // Split full name into first and last name (if possible)
-            const names = full_name.trim().split(" ");
-            setFormData((prev) => ({
-              ...prev,
-              firstName: names[0] || "",
-              lastName: names.slice(1).join(" ") || "",
-              phone: phone_number || "",
-              email: email || "",
-            }));
-          } else {
-            console.error("Fetch user error:", res.data.message);
-          }
+          const { firstName, lastName, email, phone, dob, occupation } = res.data.user;
+          setFormData({
+            firstName: firstName || "",
+            lastName: lastName || "",
+            phone: phone || "",
+            email: email || "",
+            dob: dob || "",
+            occupation: occupation || "",
+          });
         })
         .catch((err) => {
-          console.error("Error fetching user:", err);
+          setError("Failed to fetch user data.");
+          console.error(err);
         });
     }
   }, []);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -58,38 +50,39 @@ const VerifyAccount = () => {
     }));
   };
 
-  // Handle form submission to update the backend with edited details.
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    
-    // Update user details API endpoint (make sure your backend has this implemented)
-    axios.post("http://localhost/breicsk/backk/update_user.php", {
-      section: "personal",
-      user_id: localStorage.getItem("user_id"),
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      phone_number: formData.phone,
-      dob: formData.dob,
-      occupation: formData.occupation,
-    }, { withCredentials: true })
-    .then((res) => {
-      if (res.data.success) {
-        console.log(res.data)
+
+    const userId = localStorage.getItem("user_id");
+
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/user/${userId}`,
+        {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          email: formData.email,
+          dob: formData.dob,
+          occupation: formData.occupation,
+        },
+        { withCredentials: true }
+      );
+
+      if (res.data.status === "success") {
         alert("Updated successfully");
         navigate("/verify-id");
       } else {
         setError(res.data.message || "Update failed.");
       }
-    })
-    .catch((error) => {
-      console.error("Update error:", error);
-    })
-    
-      .finally(() => {
-        setLoading(false);
-      });
+    } catch (err) {
+      console.error("Update error:", err);
+      setError("An error occurred while updating your info.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,9 +97,7 @@ const VerifyAccount = () => {
 
         <section className="personal-info">
           <h2>Personal Information</h2>
-          <p className="info-subtext">
-            Please review and update your personal information
-          </p>
+          <p className="info-subtext">Please review and update your personal information</p>
 
           {error && <p className="error-message">{error}</p>}
 

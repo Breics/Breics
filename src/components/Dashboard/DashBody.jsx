@@ -7,32 +7,27 @@ import { HiArrowNarrowRight } from 'react-icons/hi';
 const DashBody = () => {
   const [userData, setUserData] = useState({
     full_name: '',
-    isVerified: true, // default to true to hide card by default
+    isVerified: true, // default to true to hide card
+    account_type: '',
   });
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
-    console.log("DashBody: userId from storage:", userId);
     if (!userId) return;
-  
-    axios.post("http://localhost/breicsk/backk/get_user_info.php", { user_id: userId })
+
+    axios.get(`http://localhost:5000/api/user/${userId}`, { withCredentials: true })
       .then(res => {
-        console.log("DashBody: fetch_user response:", res.data);
-        if (res.data.success) {
-          setUserData({
-            full_name: res.data.data.full_name,
-            isVerified: res.data.data.is_verified === "1",
-            account_type: res.data.data.account_type,
-          });
-        } else {
-          console.error("DashBody:", res.data.message);
-        }
+        const { fullName, isVerified, accountType } = res.data.user;
+        setUserData({
+          full_name: fullName,
+          isVerified: isVerified,
+          account_type: accountType,
+        });
       })
       .catch(err => {
-        console.error("DashBody fetch error:", err);
+        console.error("Failed to fetch user data in DashBody:", err);
       });
   }, []);
-  
 
   return (
     <div className="dashboard-container">
@@ -41,7 +36,7 @@ const DashBody = () => {
         Welcome to Breics. Kindly complete your account setup to start benefitting from the safest, fastest and flexible platform to list and manage your properties and tenant-related issues.
       </p>
 
-      {/* {!userData.isVerified && userData.account_type === "landlord" && ( */}
+      {!userData.isVerified && userData.account_type === "landlord" && (
         <div className="dashboard-card">
           <div className="dashboard-card-icon">
             <FaIdCard size={24} color="#f59e0b" />
@@ -58,7 +53,7 @@ const DashBody = () => {
             </a>
           </div>
         </div>
-      {/* )} */}
+      )}
     </div>
   );
 };

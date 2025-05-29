@@ -33,9 +33,7 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      // Replace this with your actual API call (e.g., fetch or axios)
-      // Example placeholder:
-      const res = await fetch("/api/reset-password", {
+      const res = await fetch("http://localhost:5000/api/auth/reset-password-confirm", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,13 +43,13 @@ const ResetPassword = () => {
 
       const data = await res.json();
 
-      if (!res.ok) {
+      if (!res.ok || data.status !== "success") {
         throw new Error(data.message || "Something went wrong.");
       }
 
       setSuccess(true);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to reset password.");
     } finally {
       setLoading(false);
     }
@@ -68,8 +66,7 @@ const ResetPassword = () => {
 
         {success ? (
           <div className="success-msg">
-            ✅ Your password has been reset. You may now{" "}
-            <a href="/login">sign in</a>.
+            ✅ Your password has been reset. You may now <a href="/login">sign in</a>.
           </div>
         ) : (
           <form onSubmit={handleSubmit}>

@@ -53,40 +53,22 @@ const Login = () => {
   
     try {
       if (isLogin) {
-        const res = await axios.post("http://localhost/breicsk/backk/process_login.php", {
+        const res = await axios.post("http://localhost:5000/api/auth/login", {
           email: formData.email,
           password: formData.password,
         });
   
-        const {  status, message, redirect_url, user_id } = res.data;
-        console.log("Login response:", res.data);  
-
+        const { status, token, user_id } = res.data;
   
-        if (status  === "success") {
-          // Store user_id
+        if (status === "success") {
+          localStorage.setItem("token", token);
           localStorage.setItem("user_id", user_id);
-  
-          // Fetch full user data
-          console.log("Calling fetch_user.php with user_id:", user_id);
-
-          const userRes = await axios.post("http://localhost/breicsk/backk/get_user_info.php", {
-            user_id: user_id,
-          });
-  
-          if (userRes.data.success) {
-            const fullName = userRes.data.data.full_name;
-            localStorage.setItem("full_name", fullName);
-            alert(`Hello ${fullName}`);
-          }
-  
-          window.location.href = "/" + redirect_url;
-        } else if (status === "unverified") {
-          setError("Please verify your email before logging in.");
+          window.location.href = "/dashboard";
         } else {
-          setError(message);
+          setError("Login failed.");
         }
       } else {
-        const res = await axios.post("http://localhost/breicsk/backk/process_signup.php", {
+        const res = await axios.post("http://localhost:5000/api/auth/register", {
           ...formData,
           accept_terms: formData.accept_terms ? "1" : "0",
         });
@@ -101,12 +83,13 @@ const Login = () => {
         }
       }
     } catch (err) {
-      console.error("Error:", err);
-      setError("Something went wrong. Please try again.");
+      console.error("API Error:", err);
+      setError("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+  
   
 
   return (
@@ -222,7 +205,7 @@ const Login = () => {
 
           {isLogin && (
             <>
-              <a href="#" className="forgot-password">
+              <a href="/reset-password" className="forgot-password">
                 Forgot password?
               </a>
               <button type="submit" className="submit-btn" disabled={loading}>

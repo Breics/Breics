@@ -1,85 +1,64 @@
 import React, { useState } from "react";
-import "../styles/Forgot.css";
 
-const ForgotPassword = () => {
+const ResetPassword = () => {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState(""); // "success" | "error"
+  const [token, setToken] = useState(""); // Token sent via email
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
-    setStatus("");
     setMessage("");
 
-    if (!email) {
-      setStatus("error");
-      setMessage("Please enter your email.");
-      return;
-    }
-
     try {
-      // Simulate sending email — replace with actual backend call
-      const res = await fetch("/api/forgot-password", {
+      const res = await fetch("http://localhost:5000/api/auth/reset-password", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, token, password }),
       });
 
-      const data = await res.json();
+      const result = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Error sending reset email.");
-
+      if (!res.ok || result.status !== "success") throw new Error(result.message);
       setStatus("success");
-      setMessage("Reset link sent! Check your inbox.");
+      setMessage(result.message);
     } catch (err) {
       setStatus("error");
-      setMessage(err.message);
+      setMessage(err.message || "Reset failed.");
     }
   };
 
   return (
-    <div className="forgot-container">
-      <div className="forgot-box">
-        <h2>Sign in to Breics</h2>
-        <h3>Forgot Password</h3>
-        <p>
-          Don’t worry! Enter your email address. We will send you a link to
-          create a new password.
-        </p>
-
-        {status && (
-          <div className={status === "success" ? "success-box" : "error-box"}>
-            {message}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <label>Enter your email</label>
-          <input
-            type="email"
-            placeholder="example@gmail.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-          <button type="submit" className="orange-btn">
-            Send reset link
-          </button>
-
-          <button
-            type="button"
-            className="go-back"
-            onClick={() => (window.location.href = "/login")}
-          >
-            ← Go back to sign in page
-          </button>
-        </form>
-      </div>
+    <div className="reset-container">
+      <h2>Reset Your Password</h2>
+      {status && <p className={status === "success" ? "success" : "error"}>{message}</p>}
+      <form onSubmit={handleReset}>
+        <input
+          type="email"
+          value={email}
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          value={token}
+          placeholder="Verification Token"
+          onChange={(e) => setToken(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          placeholder="New Password"
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Reset Password</button>
+      </form>
     </div>
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

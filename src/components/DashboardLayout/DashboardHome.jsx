@@ -1,54 +1,105 @@
 import React, { useEffect, useState } from 'react';
 import ChartCard from './DashCard';
 
-// Static fallback data
 const defaultDashboardData = {
   totalProperties: {
-    total: 22,
-    occupied: 12,
-    vacant: 2,
-    pending: 8
+    total: 0,
+    occupied: 0,
+    vacant: 0,
+    pending: 0,
   },
   rentalIncome: {
-    paid: 4000000,
-    overdue: 2100000
+    paid: 0,
+    overdue: 0,
   },
   tenants: {
-    total: 22,
-    active: 16,
-    inactive: 6
+    total: 0,
+    active: 0,
+    inactive: 0,
   },
   tickets: {
-    total: 12,
-    open: 10,
-    closed: 2
-  }
+    total: 0,
+    open: 0,
+    closed: 0,
+  },
 };
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(defaultDashboardData);
+  const [userName, setUserName] = useState('User');
 
   useEffect(() => {
-    const fetchData = async () => {
+    const userId = localStorage.getItem('user_id'); // landlord_id
+    if (!userId) return;
+
+    const fetchUserName = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/dashboard-data');
-        if (!res.ok) throw new Error('Network response was not ok');
-        const data = await res.json();
-        setDashboardData(data);
-      } catch (error) {
-        console.warn('Using fallback data, backend not reachable:', error.message);
-        // Keeps defaultDashboardData
+        const res = await fetch('http://localhost/breicsk/backk/get_user_info.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ user_id: parseInt(userId) }),
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          setUserName(result.data.full_name);
+        } else {
+          console.warn(result.message);
+        }
+      } catch (err) {
+        console.error('Error fetching user name:', err.message);
       }
     };
 
-    fetchData();
+    const fetchDashboardData = async () => {
+      try {
+        const res = await fetch(`http://localhost/breicsk/backk/fetch_landlord_statdata.php`);
+        if (!res.ok) throw new Error('Failed to fetch dashboard stats');
+
+        const data = await res.json();
+
+        // Reshape backend data into the format expected by the UI
+        const reshapedData = {
+          totalProperties: {
+            occupied: data.properties.occupied,
+            vacant: data.properties.vacant,
+            pending: data.properties.pending,
+            total: data.properties.occupied + data.properties.vacant + data.properties.pending,
+          },
+          rentalIncome: {
+            paid: data.rental_income.paid,
+            overdue: data.rental_income.overdue,
+          },
+          tenants: {
+            active: data.tenants.active,
+            inactive: data.tenants.inactive,
+            total: data.tenants.active + data.tenants.inactive,
+          },
+          tickets: {
+            open: data.tickets.open,
+            closed: data.tickets.closed,
+            total: data.tickets.open + data.tickets.closed,
+          },
+        };
+
+        setDashboardData(reshapedData);
+      } catch (err) {
+        console.warn('Using fallback data:', err.message);
+      }
+    };
+
+    fetchUserName();
+    fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const { totalProperties, rentalIncome, tenants, tickets } = dashboardData;
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>Hi Shehu 👋</h2>
+      <h2>Hi {userName} 👋</h2>
       <h1>Dashboard</h1>
 
       <div className="cards" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
