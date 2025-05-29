@@ -66,13 +66,14 @@ const VerifyAccount = () => {
     
     // Update user details API endpoint (make sure your backend has this implemented)
     axios.post("http://localhost/breicsk/backk/update_user.php", {
+      section: "personal",
       user_id: localStorage.getItem("user_id"),
       first_name: formData.firstName,
       last_name: formData.lastName,
-      // phone_number: formData.phone
-      // dob: formData.dob,
-      // occupation: formData.occupation,
-    }, { withCredentials: true }) // Important if cookies are involved
+      phone_number: formData.phone,
+      dob: formData.dob,
+      occupation: formData.occupation,
+    }, { withCredentials: true })
     .then((res) => {
       if (res.data.success) {
         console.log(res.data)
