@@ -59,7 +59,7 @@ const Login = () => {
         });
   
         const {  status, message, redirect_url, user_id } = res.data;
-        console.log("Login response:", res.data);  // 👈 add this line
+        console.log("Login response:", res.data);  
 
   
         if (status  === "success") {
@@ -168,8 +168,8 @@ const Login = () => {
               >
                 <option value="resident">Resident</option>
                 <option value="landlord">Landlord</option>
-                <option value="agent">Agent</option>
-                <option value="control">Admin</option>
+                {/* <option value="agent">Agent</option>
+                <option value="control">Admin</option> */}
               </select>
             </>
           )}
