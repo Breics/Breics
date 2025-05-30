@@ -36,7 +36,7 @@ const DashBody = () => {
         Welcome to Breics. Kindly complete your account setup to start benefitting from the safest, fastest and flexible platform to list and manage your properties and tenant-related issues.
       </p>
 
-      {!userData.isVerified && userData.account_type === "landlord" && (
+      {/* {!userData.isVerified && userData.account_type === "landlord" && ( */}
         <div className="dashboard-card">
           <div className="dashboard-card-icon">
             <FaIdCard size={24} color="#f59e0b" />
@@ -53,7 +53,7 @@ const DashBody = () => {
             </a>
           </div>
         </div>
-      )}
+      {/* )} */}
     </div>
   );
 };

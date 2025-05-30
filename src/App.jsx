@@ -16,6 +16,8 @@ import TenantDashboard from "./components/DashboardLayout/Tenants";
 import Payments from "./components/DashboardLayout/Payments";
 import Adminstrator from "./components/DashboardLayout/Adminstrator";
 import FacilityDashboard from "./components/DashboardLayout/Facility";
+import SupportDashboard from "./components/DashboardLayout/Support";
+import AccountProfile from "./components/DashboardLayout/Account";
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
           <Route path="payments" element={<Payments/>} />
           <Route path="admin" element={<Adminstrator/>} />
           <Route path="facility" element={<FacilityDashboard/>} />
+          <Route path="support" element={<SupportDashboard/>} />
+          <Route path="account" element={<AccountProfile/>} />
 
         </Route>
       </Routes>

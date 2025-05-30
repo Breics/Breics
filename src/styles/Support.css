@@ -1,0 +1,107 @@
+.support-dashboard {
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .support-header {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .support-box, .raise-box {
+    flex: 1;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #eee;
+  }
+  
+  .raise-box button {
+    margin-top: 1rem;
+    background: #ff7a00;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .tabs .active {
+    font-weight: bold;
+    color: #ff7a00;
+  }
+  
+  .search-filter {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .search-filter input, .search-filter select {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  .tickets-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .tickets-table th, .tickets-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .user-info {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+  
+  .role {
+    font-size: 0.85rem;
+    color: #999;
+  }
+  
+  .category {
+    color: #ff7a00;
+  }
+  
+  .status-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+  }
+  
+  .status-badge.open {
+    background: #e0f7ea;
+    color: #2e7d32;
+  }
+  
+  .status-badge.closed {
+    background: #fdecea;
+    color: #c62828;
+  }
+  
+  .dots {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  

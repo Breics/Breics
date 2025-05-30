@@ -22,8 +22,8 @@ const navItems = [
   { label: "Payments", icon: <FiCreditCard />, path: "/dashboard/payments" },
   { label: "Facility", icon: <FiServer />, path: "/dashboard/facility" },
   { label: "Administration", icon: <FiUserCheck />, path: "/dashboard/admin" },
-  { label: "Support", icon: <FiSettings />, path: "/support" },
-  { label: "Account", icon: <FiUser />, path: "/account" }
+  { label: "Support", icon: <FiSettings />, path: "/dashboard/support" },
+  { label: "Account", icon: <FiUser />, path: "/dashboard/account" }
 ];
 
 const Sidebar = () => {
