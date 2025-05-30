@@ -45,7 +45,12 @@ const IDUploadModal = ({ type, onClose, onSubmit }) => {
   };
 
   const handleFileChange = (e) => {
-    setIdFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file && !["image/png", "image/jpeg", "application/pdf"].includes(file.type)) {
+      alert("Unsupported file type. Please upload PNG, JPG, or PDF.");
+      return;
+    }
+    setIdFile(file);
   };
 
   const handleSubmit = () => {
@@ -54,7 +59,11 @@ const IDUploadModal = ({ type, onClose, onSubmit }) => {
       return;
     }
 
-    onSubmit({ type, idNumber, idFile });
+    // Match backend field expectations
+    onSubmit({
+      id_number: idNumber,
+      id_image: idFile,
+    });
   };
 
   return (
