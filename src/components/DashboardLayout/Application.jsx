@@ -1,70 +1,72 @@
-import React, { useState } from 'react';
-import ActionMenu from './ActionMenu';
 import '../../styles/Applications.css'
+import React, { useEffect, useState } from 'react';
 
-const dummyData = [
-    {
-      id: 1,
-      name: 'Imade Imhavu',
-      address: '15, Mende Str. Maryland, Lagos',
-      date: '01/09/2021',
-      amount: '₦ 500,000.01',
-      status: 'Rejected',
-      payment: 'Pending'
-    },
-    {
-      id: 2,
-      name: 'Imade Imhavu',
-      address: '15, Mende Str. Maryland, Lagos',
-      date: '01/09/2021',
-      amount: '₦ 10,000.01',
-      status: 'Accepted',
-      payment: 'Paid'
-    }
-  ];
-  
-  function Application() {
-    const [menuOpen, setMenuOpen] = useState(null);
-  
-    return (
-      <div className="applications">
+
+export default function Application () {
+  const [reservations, setReservations] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/reservations')
+      .then(res => res.json())
+      .then(data => setReservations(data));
+  }, []);
+
+  return (
+    <div className="reservations-container">
+      <div className="header">
         <h2>Applications</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Property Address</th>
-              <th>Date</th>
-              <th>Amount Paid</th>
-              <th>Reservation Status</th>
-              <th>Payment Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dummyData.map((row) => (
-              <tr key={row.id}>
-                <td>{row.name}</td>
-                <td>{row.address}</td>
-                <td>{row.date}</td>
-                <td>{row.amount}</td>
-                <td>
-                  <span className={`status ${row.status.toLowerCase()}`}>{row.status}</span>
-                </td>
-                <td>
-                  <span className={`payment ${row.payment.toLowerCase()}`}>{row.payment}</span>
-                </td>
-                <td>
-                  <button onClick={() => setMenuOpen(menuOpen === row.id ? null : row.id)}>⋮</button>
-                  {menuOpen === row.id && <ActionMenu />}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <button className="add-btn">Add application</button>
       </div>
-    );
-  }
-  
-  export default Application;
-  
+
+      <div className="tabs">
+        <button className="tab active">Reservations <span>4</span></button>
+        <a href="/dashboard/inspection" className='tab'> Inspection Request</a>
+        {/* <button className="tab">Inspection request <span>4</span></button> */}
+      </div>
+
+      <div className="filter-bar">
+        <input type="text" className="search-input" placeholder="Search reservation" />
+        <select><option>All reservations</option></select>
+        <select><option>All dates</option></select>
+        <select><option>All status</option></select>
+      </div>
+
+      <table className="reservations-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Property address</th>
+            <th>Date</th>
+            <th>Amount Paid</th>
+            <th>Reservation status</th>
+            <th>Payment status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reservations.map((res, index) => (
+            <tr key={index}>
+              <td className="user-info">
+                <img src={res.avatar} alt="avatar" />
+                {res.name}
+              </td>
+              <td>{res.address}</td>
+              <td>{res.date}</td>
+              <td>{res.amount}</td>
+              <td><span className={`badge ${res.status.toLowerCase()}`}>{res.status}</span></td>
+              <td><span className={`badge ${res.payment.toLowerCase()}`}>{res.payment}</span></td>
+              <td className="actions">
+                <button className="dots">•••</button>
+                <div className="menu">
+                  <button>View reservation</button>
+                  <button>Accept reservation</button>
+                  <button>Reject reservation</button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

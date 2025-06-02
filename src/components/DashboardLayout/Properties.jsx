@@ -1,56 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/MyProperties.css";
-import landlordImage from '../../image/land.jpg';
-
-const properties = [
-  {
-    title: "Fully Furnished 2 Bedroom En-suite Apartment",
-    location: "Maryland, Lagos",
-    type: "2 Bedroom",
-    rent: "₦ 500,000/month",
-    verified: false,
-    occupied: false,
-    img: {landlordImage},
-  },
-  {
-    title: "Fully Furnished 2 Bedroom En-suite Apartment",
-    location: "Maryland, Lagos",
-    type: "2 Bedroom",
-    rent: "₦ 500,000/month",
-    verified: false,
-    occupied: false,
-    img: {landlordImage},
-  },
-  {
-    title: "Fully Furnished 2 Bedroom En-suite Apartment",
-    location: "Maryland, Lagos",
-    type: "2 Bedroom",
-    rent: "₦ 500,000/month",
-    verified: true,
-    occupied: true,
-    img: {landlordImage},
-  },
-  {
-    title: "Fully Furnished 2 Bedroom En-suite Apartment",
-    location: "Maryland, Lagos",
-    type: "2 Bedroom",
-    rent: "₦ 500,000/month",
-    verified: true,
-    occupied: false,
-    img: {landlordImage},
-  },
-  {
-    title: "Fully Furnished 2 Bedroom En-suite Apartment",
-    location: "Maryland, Lagos",
-    type: "2 Bedroom",
-    rent: "₦ 500,000/month",
-    verified: true,
-    occupied: true,
-    img: {landlordImage},
-  },
-];
 
 const MyProperties = () => {
+  const [properties, setProperties] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/properties")
+      .then(res => res.json())
+      .then(data => setProperties(data));
+  }, []);
+
   return (
     <div className="properties-container">
       <div className="header-row">
@@ -65,21 +24,21 @@ const MyProperties = () => {
         <div className="stat-card">
           <span className="icon home" />
           <div>
-            <h4>36</h4>
+            <h4>{properties.length}</h4>
             <p>Total properties</p>
           </div>
         </div>
         <div className="stat-card">
           <span className="icon occupied" />
           <div>
-            <h4>29</h4>
+            <h4>{properties.filter(p => p.occupied).length}</h4>
             <p>Occupied properties</p>
           </div>
         </div>
         <div className="stat-card">
           <span className="icon unoccupied" />
           <div>
-            <h4>7</h4>
+            <h4>{properties.filter(p => !p.occupied).length}</h4>
             <p>Unoccupied properties</p>
           </div>
         </div>
@@ -108,7 +67,7 @@ const MyProperties = () => {
         <tbody>
           {properties.map((p, i) => (
             <tr key={i}>
-              <td><img src={landlordImage} alt="apt" /><span>{p.title}</span></td>
+              <td><img src={p.img} alt="apt" /><span>{p.title}</span></td>
               <td>{p.location}</td>
               <td>{p.type}</td>
               <td>{p.rent}</td>
