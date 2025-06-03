@@ -4,9 +4,9 @@ import "../../styles/MyProperties.css";
 const MyProperties = () => {
   const [properties, setProperties] = useState([]);
 
-  useEffect(() => {
+  useEffect(() => { 
     fetch("http://localhost:5000/api/properties")
-      .then(res => res.json())
+      .then(res => res.json())                                                                 
       .then(data => setProperties(data));
   }, []);
 
