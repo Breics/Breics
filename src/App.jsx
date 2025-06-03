@@ -21,6 +21,7 @@ import AccountProfile from "./components/DashboardLayout/Account";
 import InspectionRequests from "./components/DashboardLayout/inspection";
 import SubmitNewProperty from "./components/DashboardLayout/NewProperty";
 import PropertyDetails from "./components/DashboardLayout/PropertyDetails";
+import TenantProfile from "./components/DashboardLayout/TenantProfile";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
           <Route path="inspection" element={<InspectionRequests/>} />
           <Route path="new-property" element={<SubmitNewProperty/>} />
           <Route path="property-details/:id" element={<PropertyDetails />} />
+          <Route path="tenants-profile/:tenantId" element={<TenantProfile />} />
 
 
         </Route>

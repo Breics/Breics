@@ -1,32 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/Tenants.css";
 import landlordImage from '../../image/land.jpg';
-
-const tenants = [
-  {
-    name: "Shehu Omotosho",
-    id: "BR345009",
-    phone: "09017556160",
-    img: {landlordImage},
-    rentExpiry: "30/09/2021",
-  },
-  {
-    name: "Shehu Omotosho",
-    id: "BR345009",
-    phone: "09017556160",
-    img: {landlordImage},
-    rentExpiry: "30/09/2021",
-  },
-  {
-    name: "Shehu Omotosho",
-    id: "BR345009",
-    phone: "09017556160",
-    img: {landlordImage},
-    rentExpiry: "30/09/2021",
-  },
-];
+import { Link } from "react-router-dom";
 
 const TenantDashboard = () => {
+  const [tenants, setTenants] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/tenants") // Adjust URL if needed
+      .then(res => res.json())
+      .then(data => {
+        setTenants(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch tenants:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="tenant-dashboard">Loading tenants...</div>;
+
   return (
     <div className="tenant-dashboard">
       <div className="dashboard-header">
@@ -41,21 +36,21 @@ const TenantDashboard = () => {
         <div className="stat-card total">
           <span className="icon total-icon"></span>
           <div>
-            <h4>36</h4>
+            <h4>{tenants.length}</h4>
             <p>Total tenants</p>
           </div>
         </div>
         <div className="stat-card active">
           <span className="icon active-icon"></span>
           <div>
-            <h4>29</h4>
+            <h4>{tenants.filter(t => t.status === "active").length}</h4>
             <p>Active tenants</p>
           </div>
         </div>
         <div className="stat-card overdue">
           <span className="icon overdue-icon"></span>
           <div>
-            <h4>7</h4>
+            <h4>{tenants.filter(t => t.status === "overdue").length}</h4>
             <p>Overdue tenants</p>
           </div>
         </div>
@@ -79,7 +74,7 @@ const TenantDashboard = () => {
         {tenants.map((t, i) => (
           <div className="tenant-card" key={i}>
             <div className="card-header">
-              <img className="avatar" src={landlordImage} alt="avatar" />
+              <img className="avatar" src={t.image || landlordImage} alt="avatar" />
               <button className="card-menu">...</button>
               <div className="menu-dropdown">
                 <ul>
@@ -98,7 +93,7 @@ const TenantDashboard = () => {
               <p>ID: {t.id}</p>
               <p>{t.phone}</p>
               <span className="rent-expiry">Rent Expires {t.rentExpiry}</span>
-              <button className="view-profile">View Profile</button>
+              <Link to={`/tenants/${t.id}`} className="view-profile">View Profile</Link>
             </div>
           </div>
         ))}

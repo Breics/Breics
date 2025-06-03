@@ -20,6 +20,7 @@ export default function AccountProfile() {
         <button className="tab">Bank Information</button>
         <button className="tab active">My Profile</button>
       </div>
+      dsa
 
       <div className="profile-header">
         <div className="avatar" />
