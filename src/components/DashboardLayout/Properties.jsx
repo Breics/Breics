@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ← Import navigation
 import "../../styles/MyProperties.css";
 
 const MyProperties = () => {
   const [properties, setProperties] = useState([]);
+  const navigate = useNavigate(); // ← Hook for routing
 
   useEffect(() => { 
     fetch("http://localhost:5000/api/properties")
       .then(res => res.json())                                                                 
       .then(data => setProperties(data));
   }, []);
+
+  const handleRowClick = (id) => {
+    navigate(`/dashboard/property/${id}`); // ← Navigate to property details
+  };
 
   return (
     <div className="properties-container">
@@ -17,7 +23,6 @@ const MyProperties = () => {
         <div className="action-buttons">
           <button className="verify-btn">Verify Property</button>
           <a href="/dashboard/new-property" className="new-btn">List new property</a>
-          
         </div>
       </div>
 
@@ -67,7 +72,7 @@ const MyProperties = () => {
         </thead>
         <tbody>
           {properties.map((p, i) => (
-            <tr key={i}>
+            <tr key={i} onClick={() => handleRowClick(p._id)} className="clickable-row">
               <td><img src={p.img} alt="apt" /><span>{p.title}</span></td>
               <td>{p.location}</td>
               <td>{p.type}</td>

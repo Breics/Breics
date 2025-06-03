@@ -30,6 +30,9 @@ const SubmitNewProperty = () => {
     agreement: false,
   });
 
+  const [images, setImages] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -38,15 +41,37 @@ const SubmitNewProperty = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(files);
+  };
+
+  const handleFormSubmit = async () => {
+    const form = new FormData();
+
+    // Append form fields
+    for (const key in formData) {
+      form.append(key, formData[key]);
+    }
+
+    // Append images
+    images.forEach((img) => {
+      form.append("images", img);
+    });
+
     const res = await fetch("http://localhost:5000/api/properties", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: form,
     });
+
     const result = await res.json();
     console.log(result);
+    setShowModal(false);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setShowModal(true);
   };
 
   return (
@@ -54,15 +79,20 @@ const SubmitNewProperty = () => {
       <h2>Submit New Property</h2>
       <div className="submit-wrapper">
         <div className="upload-section">
-          <div className="upload-box">Upload an image</div>
-          <ul className="image-list">
-            <li>
-              Image-001.jpg <span>125kb</span>
-            </li>
-            <li>
-              Image-001.jpg <span>125kb</span>
-            </li>
-          </ul>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+          />
+          <div className="preview-gallery">
+            {images.map((file, idx) => (
+              <div className="preview-box" key={idx}>
+                <img src={URL.createObjectURL(file)} alt={`preview-${idx}`} />
+                <span>{file.name}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <form className="form-section" onSubmit={handleSubmit}>
@@ -81,6 +111,7 @@ const SubmitNewProperty = () => {
             name="propertyType"
             value={formData.propertyType}
             onChange={handleChange}
+            className="sel"
           >
             <option>Select property type</option>
             <option>2 Bedroom</option>
@@ -281,6 +312,26 @@ const SubmitNewProperty = () => {
               />
             </div>
           </div>
+          <div className="property-info">
+            <div className="property-group">
+              <label>Select Category </label>
+              <input
+                name="sideCategory"
+                value={formData.sideCategory}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="property-group">
+              <label>Type name details</label>
+              <input
+                name="sideName"
+                
+                value={formData.sideName}
+                onChange={handleChange}
+              />
+            </div>
+           
+          </div>
 
           {/* Continue building out all the rest of the form fields in same pattern */}
           <div className="checkbox-group">
@@ -308,9 +359,36 @@ const SubmitNewProperty = () => {
             Save and complete
           </button>
         </form>
+
       </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <div className="modal-icon">
+              <img src="/icons/house-user.svg" alt="confirm" />
+            </div>
+            <h3>Confirm Property Submission</h3>
+            <p>Do you want to list this property on Breics?</p>
+            <div className="modal-actions">
+              <button className="confirm-btn" onClick={handleFormSubmit}>
+                Yes! List my property
+              </button>
+              <button
+                className="cancel-btn"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default SubmitNewProperty;
+
+
+        

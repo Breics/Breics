@@ -20,6 +20,7 @@ import SupportDashboard from "./components/DashboardLayout/Support";
 import AccountProfile from "./components/DashboardLayout/Account";
 import InspectionRequests from "./components/DashboardLayout/inspection";
 import SubmitNewProperty from "./components/DashboardLayout/NewProperty";
+import PropertyDetails from "./components/DashboardLayout/PropertyDetails";
 
 function App() {
   return (
@@ -49,6 +50,8 @@ function App() {
           <Route path="account" element={<AccountProfile/>} />
           <Route path="inspection" element={<InspectionRequests/>} />
           <Route path="new-property" element={<SubmitNewProperty/>} />
+          <Route path="property-details/:id" element={<PropertyDetails />} />
+
 
         </Route>
       </Routes>
