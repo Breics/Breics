@@ -16,7 +16,8 @@ const MyProperties = () => {
         <h2>My Properties</h2>
         <div className="action-buttons">
           <button className="verify-btn">Verify Property</button>
-          <button className="new-btn">List new property</button>
+          <a href="/dashboard/new-property" className="new-btn">List new property</a>
+          
         </div>
       </div>
 
