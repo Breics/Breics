@@ -7,15 +7,17 @@ axios.defaults.withCredentials = true;
 const Login = () => {
   const [mode, setMode] = useState("login"); // 'login' or 'register'
   const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    country_code: "+234",
-    phone_number: "",
+    firstName: "",
+    lastName: "",
+    country_code: "",
+    phoneNumber: "",
     email: "",
     password: "",
-    confirm_password: "",
+    confirmPassword: "",
     account_type: "resident",
     accept_terms: false,
+    company_name: "",
+    registration_number: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,15 +27,17 @@ const Login = () => {
   const handleToggle = (tab) => {
     setMode(tab);
     setFormData({
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
       country_code: "+234",
-      phone_number: "",
+      phoneNumber: "",
       email: "",
       password: "",
-      confirm_password: "",
+      confirmPassword: "",
       account_type: "resident",
       accept_terms: false,
+      company_name: "",
+      registration_number: "",
     });
     setError("");
   };
@@ -53,10 +57,14 @@ const Login = () => {
   
     try {
       if (isLogin) {
-        const res = await axios.post("https://breics.onrender.com/api/auth/login", {
-          email: formData.email,
-          password: formData.password,
-        });
+        // Login logic
+        const res = await axios.post(
+          "https://breics-backend.onrender.com/api/landlords/login",
+          {
+            email: formData.email,
+            password: formData.password,
+          }
+        );
   
         const { status, token, user_id } = res.data;
   
@@ -67,29 +75,80 @@ const Login = () => {
         } else {
           setError("Login failed.");
         }
+  
       } else {
-        const res = await axios.post("http://localhost:5000/api/auth/register", {
-          ...formData,
-          accept_terms: formData.accept_terms ? "1" : "0",
-        });
+        // Registration logic
+        const requiredFields = [
+          "firstName",
+          "lastName",
+          "phoneNumber",
+          "email",
+          "password",
+          "confirmPassword",
+        ];
+        for (let field of requiredFields) {
+          if (!formData[field]) {
+            setError(`Please fill out the ${field} field.`);
+            setLoading(false);
+            return;
+          }
+        }
+  
+        if (formData.password !== formData.confirmPassword) {
+          setError("Passwords do not match.");
+          setLoading(false);
+          return;
+        }
+  
+        if (!formData.accept_terms) {
+          setError("You must accept the Terms and Conditions.");
+          setLoading(false);
+          return;
+        }
+  
+        const payload = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          phoneNumber: formData.country_code + formData.phoneNumber,
+          companyDetails: {
+            name:
+              formData.account_type === "landlord"
+                ? formData.company_name
+                : "N/A",
+            registrationNumber:
+              formData.account_type === "landlord"
+                ? formData.registration_number
+                : "N/A",
+          },
+        };
+  
+        const res = await axios.post(
+          "https://breics-backend.onrender.com/api/auth/register",
+          payload
+        );
   
         const { status, message } = res.data;
   
         if (status === "success") {
-          alert(message);
+          alert("Registration successful! Please log in.");
           setMode("login");
         } else {
-          setError(message);
+          setError(message || "Registration failed.");
         }
       }
     } catch (err) {
       console.error("API Error:", err);
-      setError("Server error. Please try again.");
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Server error. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
-  
   
 
   return (
@@ -118,17 +177,17 @@ const Login = () => {
               <div className="two-inputs">
                 <input
                   type="text"
-                  name="first_name"
+                  name="firstName"
                   placeholder="First Name"
-                  value={formData.first_name}
+                  value={formData.firstName}
                   onChange={handleChange}
                   required
                 />
                 <input
                   type="text"
-                  name="last_name"
+                  name="lastName"
                   placeholder="Last Name"
-                  value={formData.last_name}
+                  value={formData.lastName}
                   onChange={handleChange}
                   required
                 />
@@ -136,9 +195,9 @@ const Login = () => {
 
               <input
                 type="tel"
-                name="phone_number"
+                name="phoneNumber"
                 placeholder="Phone Number"
-                value={formData.phone_number}
+                value={formData.phoneNumber}
                 onChange={handleChange}
                 required
               />
@@ -151,9 +210,28 @@ const Login = () => {
               >
                 <option value="resident">Resident</option>
                 <option value="landlord">Landlord</option>
-                {/* <option value="agent">Agent</option>
-                <option value="control">Admin</option> */}
               </select>
+
+              {formData.account_type === "landlord" && (
+                <>
+                  <input
+                    type="text"
+                    name="company_name"
+                    placeholder="Company Name"
+                    value={formData.company_name}
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="registration_number"
+                    placeholder="Registration Number"
+                    value={formData.registration_number}
+                    onChange={handleChange}
+                    required
+                  />
+                </>
+              )}
             </>
           )}
 
@@ -179,9 +257,9 @@ const Login = () => {
             <>
               <input
                 type="password"
-                name="confirm_password"
+                name="confirmPassword"
                 placeholder="Confirm Password"
-                value={formData.confirm_password}
+                value={formData.confirmPassword}
                 onChange={handleChange}
                 required
               />
@@ -197,21 +275,14 @@ const Login = () => {
             </>
           )}
 
-          {!isLogin && (
-            <button type="submit" className="submit-btn" disabled={loading}>
-              {loading ? <div className="spinner" /> : "Register"}
-            </button>
-          )}
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? <div className="spinner" /> : isLogin ? "Login" : "Register"}
+          </button>
 
           {isLogin && (
-            <>
-              <a href="/reset-password" className="forgot-password">
-                Forgot password?
-              </a>
-              <button type="submit" className="submit-btn" disabled={loading}>
-                {loading ? <div className="spinner" /> : "Login"}
-              </button>
-            </>
+            <a href="/reset-password" className="forgot-password">
+              Forgot password?
+            </a>
           )}
         </form>
       </div>
