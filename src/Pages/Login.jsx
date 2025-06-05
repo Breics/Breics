@@ -80,12 +80,14 @@ const Login = () => {
           }
         );
 
-        const { status, token, user_id } = res.data;
+        const { success, data, landlord, token } = res.data;
 
-        if (status === "success") {
+        if (success) {
+          // localStorage.setItem("token", data.token);
+          localStorage.setItem("user_id", landlord._id);
           localStorage.setItem("token", token);
-          localStorage.setItem("user_id", user_id);
-          window.location.href = "/dashboard";
+          localStorage.setItem("first_name", data.landlord.firstName);
+          window.location.href = "/verify";
         } else {
           setError("Login failed.");
         }

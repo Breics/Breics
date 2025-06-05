@@ -6,37 +6,46 @@ import { HiArrowNarrowRight } from 'react-icons/hi';
 
 const DashBody = () => {
   const [userData, setUserData] = useState({
-    full_name: '',
-    isVerified: true, // default to true to hide card
-    account_type: '',
+    firstName: '',
+    isVerified: false,
+    accountType: '',
   });
 
   useEffect(() => {
-    const userId = localStorage.getItem("user_id");
-    if (!userId) return;
+    const userId = localStorage.getItem('user_id');
+    const token = localStorage.getItem('token');
 
-    axios.get(`http://localhost:5000/api/user/${userId}`, { withCredentials: true })
-      .then(res => {
-        const { fullName, isVerified, accountType } = res.data.user;
-        setUserData({
-          full_name: fullName,
-          isVerified: isVerified,
-          account_type: accountType,
-        });
-      })
-      .catch(err => {
-        console.error("Failed to fetch user data in DashBody:", err);
+    if (!userId || !token) {
+      console.warn('User ID or token not found in localStorage.');
+      return;
+    }
+
+    axios.get(`https://breics-backend.onrender.com/api/landlords/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then(res => {
+      const user = res.data.data;
+      setUserData({
+        firstName: user.firstName || '',
+        isVerified: user.verificationStatus?.isVerified || false,
+        accountType: user.accountType || '',
       });
+    })
+    .catch(err => {
+      console.error('Failed to fetch user data in DashBody:', err.response?.data || err.message);
+    });
   }, []);
 
   return (
     <div className="dashboard-container">
-      <h2>Hello {userData.full_name},</h2>
+      <h2>Hello {userData.firstName},</h2>
       <p className="dashboard-subtext">
-        Welcome to Breics. Kindly complete your account setup to start benefitting from the safest, fastest and flexible platform to list and manage your properties and tenant-related issues.
+        Welcome to Breics. Kindly complete your account setup...
       </p>
 
-      {/* {!userData.isVerified && userData.account_type === "landlord" && ( */}
+      {!userData.isVerified && (
         <div className="dashboard-card">
           <div className="dashboard-card-icon">
             <FaIdCard size={24} color="#f59e0b" />
@@ -44,7 +53,7 @@ const DashBody = () => {
           <div className="dashboard-card-content">
             <h4>Complete account verification</h4>
             <p>
-              As an intending landlord, you need to verify your account before you can list a property
+              As an intending landlord, you need to verify your account...
             </p>
           </div>
           <div className="dashboard-card-action">
@@ -53,7 +62,7 @@ const DashBody = () => {
             </a>
           </div>
         </div>
-      {/* )} */}
+      )}
     </div>
   );
 };
