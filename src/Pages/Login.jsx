@@ -9,15 +9,16 @@ const Login = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    country_code: "",
     phoneNumber: "",
     email: "",
     password: "",
     confirmPassword: "",
     account_type: "resident",
     accept_terms: false,
-    company_name: "",
-    registration_number: "",
+    companyDetails: {
+      name: "",
+      registrationNumber: "",
+    },
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,35 +30,48 @@ const Login = () => {
     setFormData({
       firstName: "",
       lastName: "",
-      country_code: "+234",
       phoneNumber: "",
       email: "",
       password: "",
       confirmPassword: "",
       account_type: "resident",
       accept_terms: false,
-      company_name: "",
-      registration_number: "",
+      companyDetails: {
+        name: "",
+        registrationNumber: "",
+      },
     });
     setError("");
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    const val = type === "checkbox" ? checked : value;
+
+    if (name.startsWith("companyDetails.")) {
+      const field = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        companyDetails: {
+          ...prev.companyDetails,
+          [field]: val,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: val,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
+
     try {
       if (isLogin) {
-        // Login logic
         const res = await axios.post(
           "https://breics-backend.onrender.com/api/landlords/login",
           {
@@ -65,9 +79,9 @@ const Login = () => {
             password: formData.password,
           }
         );
-  
+
         const { status, token, user_id } = res.data;
-  
+
         if (status === "success") {
           localStorage.setItem("token", token);
           localStorage.setItem("user_id", user_id);
@@ -75,9 +89,7 @@ const Login = () => {
         } else {
           setError("Login failed.");
         }
-  
       } else {
-        // Registration logic
         const requiredFields = [
           "firstName",
           "lastName",
@@ -86,6 +98,7 @@ const Login = () => {
           "password",
           "confirmPassword",
         ];
+
         for (let field of requiredFields) {
           if (!formData[field]) {
             setError(`Please fill out the ${field} field.`);
@@ -93,49 +106,56 @@ const Login = () => {
             return;
           }
         }
-  
+
         if (formData.password !== formData.confirmPassword) {
           setError("Passwords do not match.");
           setLoading(false);
           return;
         }
-  
+
         if (!formData.accept_terms) {
           setError("You must accept the Terms and Conditions.");
           setLoading(false);
           return;
         }
-  
+
         const payload = {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
-          phoneNumber: formData.country_code + formData.phoneNumber,
+          confirmPassword: formData.confirmPassword, // ✅ Important
+          phoneNumber: formData.phoneNumber,
           companyDetails: {
             name:
               formData.account_type === "landlord"
-                ? formData.company_name
+                ? formData.companyDetails?.name || ""
                 : "N/A",
             registrationNumber:
               formData.account_type === "landlord"
-                ? formData.registration_number
+                ? formData.companyDetails?.registrationNumber || ""
                 : "N/A",
           },
         };
-  
+
+        console.log("Register Payload:", payload); // 🔍 Debug
+
         const res = await axios.post(
-          "https://breics-backend.onrender.com/api/auth/register",
+          "https://breics-backend.onrender.com/api/landlords/register",
           payload
         );
-  
-        const { status, message } = res.data;
-  
-        if (status === "success") {
+        console.log("API Response:", res);
+
+        const { success, data } = res.data;
+
+        if (success) {
           alert("Registration successful! Please log in.");
           setMode("login");
         } else {
-          setError(message || "Registration failed.");
+          console.log("Backend response not success:", res.data);
+          setError(
+            res.data.message || res.data.error || "Registration failed."
+          );
         }
       }
     } catch (err) {
@@ -149,7 +169,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="auth-container">
@@ -216,17 +235,17 @@ const Login = () => {
                 <>
                   <input
                     type="text"
-                    name="company_name"
+                    name="companyDetails.name"
                     placeholder="Company Name"
-                    value={formData.company_name}
+                    value={formData.companyDetails.name}
                     onChange={handleChange}
                     required
                   />
                   <input
                     type="text"
-                    name="registration_number"
+                    name="companyDetails.registrationNumber"
                     placeholder="Registration Number"
-                    value={formData.registration_number}
+                    value={formData.companyDetails.registrationNumber}
                     onChange={handleChange}
                     required
                   />
@@ -276,7 +295,13 @@ const Login = () => {
           )}
 
           <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? <div className="spinner" /> : isLogin ? "Login" : "Register"}
+            {loading ? (
+              <div className="spinner" />
+            ) : isLogin ? (
+              "Login"
+            ) : (
+              "Register"
+            )}
           </button>
 
           {isLogin && (
