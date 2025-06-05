@@ -14,29 +14,35 @@ const DashBody = () => {
   useEffect(() => {
     const userId = localStorage.getItem('user_id');
     const token = localStorage.getItem('token');
-
+  
     if (!userId || !token) {
       console.warn('User ID or token not found in localStorage.');
       return;
     }
-
-    axios.get(`https://breics-backend.onrender.com/api/landlords/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then(res => {
-      const user = res.data.data;
-      setUserData({
-        firstName: user.firstName || '',
-        isVerified: user.verificationStatus?.isVerified || false,
-        accountType: user.accountType || '',
+  
+    axios
+      .get(`https://breics-backend.onrender.com/api/landlords/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        const landlord = res.data.data.landlord;
+        setUserData({
+          firstName: landlord.firstName || '',
+          isVerified: landlord.verificationStatus?.isVerified || false,
+          accountType: landlord.accountType || '',
+        });
+      })
+      .catch((err) => {
+        console.error(
+          'Failed to fetch user data in DashBody:',
+          err.response?.data || err.message
+        );
       });
-    })
-    .catch(err => {
-      console.error('Failed to fetch user data in DashBody:', err.response?.data || err.message);
-    });
   }, []);
+  
+  
 
   return (
     <div className="dashboard-container">
