@@ -12,7 +12,7 @@ const VerifyAccount = () => {
     lastName: "",
     phoneNumber: "",
     email: "",
-    dob: "",
+    dateOfBirth: "",
     occupation: "",
   });
   const [loading, setLoading] = useState(false);
@@ -24,13 +24,14 @@ const VerifyAccount = () => {
       axios
         .get(`https://breics-backend.onrender.com/api/landlords/${userId}`)
         .then((res) => {
-          const { firstName, lastName, email, phoneNumber, dob, occupation } = res.data.data.landlord;
+          const { firstName, lastName, email, phoneNumber, dateOfBirth, occupation } = res.data.data.landlord;
+          const formattedDob = dateOfBirth ? new Date(dateOfBirth).toISOString().split("T")[0] : "";
           setFormData({
             firstName: firstName || "",
             lastName: lastName || "",
             phoneNumber: phoneNumber || "",
             email: email || "",
-            dob: dob || "",
+            dateOfBirth: formattedDob || "",
             occupation: occupation || "",
           });
         })
@@ -54,23 +55,28 @@ const VerifyAccount = () => {
     setError("");
     setLoading(true);
 
-    const userId = localStorage.getItem("user_id");
+    const token = localStorage.getItem("token");
+
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/user/${userId}`,
+        `https://breics-backend.onrender.com/api/landlords/profile`,
         {
           firstName: formData.firstName,
           lastName: formData.lastName,
           phoneNumber: formData.phone,
           email: formData.email,
-          dob: formData.dob,
+          dateOfBirth: formData.dateOfBirth,
           occupation: formData.occupation,
         },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-
-      if (res.data.status === "success") {
+      const { success, data } = res.data;
+      if (success) {
         alert("Updated successfully");
         navigate("/verify-id");
       } else {
@@ -158,8 +164,8 @@ const VerifyAccount = () => {
                 <div className="dob-group">
                   <input
                     type="date"
-                    name="dob"
-                    value={formData.dob}
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
                     onChange={handleChange}
                     required
                   />

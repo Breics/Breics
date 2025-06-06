@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/IDVerification.css";
 import { useNavigate } from "react-router-dom";
 import { FiEdit2 } from "react-icons/fi";
@@ -6,11 +6,39 @@ import Navbar from "../components/Dashboard/DasNavbar";
 import IDUploadModal from "../components/Dashboard/IDModal";
 import axios from "axios";
 
-const IDVerification = ({ user }) => {
+const IDVerification = () => {
   const navigate = useNavigate();
   const [selectedIDType, setSelectedIDType] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [idData, setIdData] = useState(null); // { id_number, id_image (File) }
+  const [idData, setIdData] = useState(null); 
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch latest user info on mount
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+
+    if (!userId) {
+      alert("No user ID found");
+      return;
+    }
+
+    axios
+      .get(`https://breics-backend.onrender.com/api/landlords/${userId}`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        const user = res.data.data.landlord;
+        setUser({
+          ...user,
+          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split("T")[0] : "",
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user:", err);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleIDTypeSelect = (type) => {
     setSelectedIDType(type);
@@ -31,7 +59,7 @@ const IDVerification = ({ user }) => {
 
     try {
       const response = await axios.post(
-        "https://breics.onrender.com/api/verify-id",
+        "https://breics-backend.onrender.com/api/landlords/verification/document",
         formData,
         {
           headers: {
@@ -39,9 +67,10 @@ const IDVerification = ({ user }) => {
           },
         }
       );
-
+      
       if (response.data.success) {
         alert("Verification info submitted successfully.");
+      
       } else {
         alert("Submission failed: " + response.data.message);
       }
@@ -50,6 +79,8 @@ const IDVerification = ({ user }) => {
       alert("An error occurred during submission.");
     }
   };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <>
@@ -68,11 +99,11 @@ const IDVerification = ({ user }) => {
             </button>
           </div>
           <div className="info-grid">
-            <div><strong>{user?.first_name}</strong><p>First name</p></div>
-            <div><strong>{user?.last_name}</strong><p>Last name</p></div>
+            <div><strong>{user?.firstName}</strong><p>First name</p></div>
+            <div><strong>{user?.lastName}</strong><p>Last name</p></div>
             <div><strong>{user?.email}</strong><p>Email Address</p></div>
-            <div><strong>{user?.phone_number}</strong><p>Phone number</p></div>
-            <div><strong>{user?.dob}</strong><p>Date of birth</p></div>
+            <div><strong>{user?.phoneNumber}</strong><p>Phone number</p></div>
+            <div><strong>{user?.dateOfBirth}</strong><p>Date of birth</p></div>
             <div><strong>{user?.occupation}</strong><p>Occupation</p></div>
           </div>
         </div>
