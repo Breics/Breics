@@ -27,6 +27,8 @@ useEffect(() => {
       },
     })
     .then((res) => {
+      console.log("Fetched landlord data:", res.data);
+
       const landlord = res.data.data.landlord;
       setUserData({
         firstName: landlord.firstName || '',

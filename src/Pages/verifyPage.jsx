@@ -10,7 +10,7 @@ const VerifyAccount = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    phone: "",
+    phoneNumber: "",
     email: "",
     dob: "",
     occupation: "",
@@ -19,17 +19,16 @@ const VerifyAccount = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const userId = localStorage.getItem("user_id");
-
+    const userId = localStorage.getItem('user_id');
     if (userId) {
       axios
-        .get(`http://localhost:5000/api/user/${userId}`, { withCredentials: true })
+        .get(`https://breics-backend.onrender.com/api/landlords/${userId}`)
         .then((res) => {
-          const { firstName, lastName, email, phone, dob, occupation } = res.data.user;
+          const { firstName, lastName, email, phoneNumber, dob, occupation } = res.data.data.landlord;
           setFormData({
             firstName: firstName || "",
             lastName: lastName || "",
-            phone: phone || "",
+            phoneNumber: phoneNumber || "",
             email: email || "",
             dob: dob || "",
             occupation: occupation || "",
@@ -63,7 +62,7 @@ const VerifyAccount = () => {
         {
           firstName: formData.firstName,
           lastName: formData.lastName,
-          phone: formData.phone,
+          phoneNumber: formData.phone,
           email: formData.email,
           dob: formData.dob,
           occupation: formData.occupation,
@@ -133,8 +132,8 @@ const VerifyAccount = () => {
                   <span className="country-code">+234</span>
                   <input
                     type="text"
-                    name="phone"
-                    value={formData.phone}
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
                     onChange={handleChange}
                     required
                   />

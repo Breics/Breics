@@ -79,15 +79,18 @@ const Login = () => {
             password: formData.password,
           }
         );
-
-        const { success, data, landlord, token } = res.data;
-
+      
+        const { success, data } = res.data;
+      
         if (success) {
-          // localStorage.setItem("token", data.token);
-          localStorage.setItem("user_id", landlord._id);
+          const { token, landlord } = data;
+      
           localStorage.setItem("token", token);
-          localStorage.setItem("first_name", data.landlord.firstName);
-          window.location.href = "/verify";
+          localStorage.setItem("user_id", landlord.id);
+          localStorage.setItem("first_name", landlord.firstName);
+          localStorage.setItem("user", JSON.stringify(landlord)); // Save entire user object
+      
+          window.location.href = "/verify"; // or "/verify" if that's the correct route
         } else {
           setError("Login failed.");
         }
