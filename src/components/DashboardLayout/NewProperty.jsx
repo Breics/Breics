@@ -30,8 +30,10 @@ const SubmitNewProperty = () => {
     agreement: false,
   });
 
-  const [images, setImages] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [validationError, setValidationError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -41,31 +43,83 @@ const SubmitNewProperty = () => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages(files);
+  const validateForm = () => {
+    const requiredFields = [
+      "amount", "propertyType", "title", "year", "lga", "country", "state",
+      "city", "address", "landmark", "zip", "bedrooms", "bathrooms", "parking"
+    ];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        return `Please fill in the ${field} field.`;
+      }
+    }
+    if (!formData.agreement) {
+      return "You must agree to the condition.";
+    }
+    return "";
   };
 
   const handleFormSubmit = async () => {
-    const form = new FormData();
-
-    // Append form fields
-    for (const key in formData) {
-      form.append(key, formData[key]);
+    console.log("Submitting form...");
+    const error = validateForm();
+    if (error) {
+      setValidationError(error);
+      return;
     }
 
-    // Append images
-    images.forEach((img) => {
-      form.append("images", img);
-    });
+    try {
+        const token = localStorage.getItem("token");
+      const res = await fetch("https://breics-backend.onrender.com/api/properties", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
-    const res = await fetch("http://localhost:5000/api/properties", {
-      method: "POST",
-      body: form,
-    });
+      const result = await res.json();
 
-    const result = await res.json();
-    console.log(result);
+      if (res.ok) {
+        setSuccessMsg("Property submitted successfully!");
+        setErrorMsg("");
+        setValidationError("");
+        setFormData({
+          amount: "",
+          propertyType: "",
+          serviced: "Serviced",
+          title: "",
+          year: "",
+          lga: "",
+          country: "",
+          state: "",
+          city: "",
+          address: "",
+          landmark: "",
+          zip: "",
+          bedrooms: "",
+          bathrooms: "",
+          parking: "",
+          religion: "",
+          tribe: "",
+          marital: "",
+          employment: "",
+          coResidents: "",
+          gender: "",
+          sideCategory: "",
+          sideName: "",
+          consent: false,
+          agreement: false,
+        });
+      } else {
+        setErrorMsg(result.message || "An error occurred while submitting.");
+        setSuccessMsg("");
+      }
+    } catch (err) {
+      setErrorMsg("Failed to connect to the server.");
+      setSuccessMsg("");
+    }
+
     setShowModal(false);
   };
 
@@ -77,26 +131,14 @@ const SubmitNewProperty = () => {
   return (
     <div className="submit-container">
       <h2>Submit New Property</h2>
-      <div className="submit-wrapper">
-        <div className="upload-section">
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
-          />
-          <div className="preview-gallery">
-            {images.map((file, idx) => (
-              <div className="preview-box" key={idx}>
-                <img src={URL.createObjectURL(file)} alt={`preview-${idx}`} />
-                <span>{file.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
 
+      {successMsg && <p className="success-msg">{successMsg}</p>}
+      {errorMsg && <p className="error-msg">{errorMsg}</p>}
+      {validationError && <p className="validation-msg">{validationError}</p>}
+
+      <div className="submit-wrapper">
         <form className="form-section" onSubmit={handleSubmit}>
-          <h3>General information</h3>
+          <h3>General Information</h3>
 
           <label>Amount*</label>
           <input
@@ -113,7 +155,7 @@ const SubmitNewProperty = () => {
             onChange={handleChange}
             className="sel"
           >
-            <option>Select property type</option>
+            <option value="">Select property type</option>
             <option>2 Bedroom</option>
             <option>3 Bedroom</option>
           </select>
@@ -141,199 +183,60 @@ const SubmitNewProperty = () => {
             </label>
           </div>
 
-          {/* Repeat for other inputs */}
-          <h3> Property Information</h3>
+          {/* --- Property Info --- */}
+          <h3>Property Information</h3>
           <div className="property-info">
-            <div className="property-group">
-              <label>Property title*</label>
-              <input
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Year Built*</label>
-              <input
-                name="year"
-                type="number"
-                value={formData.year}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>LGA*</label>
-              <input
-                name="lga"
-        
-                value={formData.lga}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="property-info">
-            <div className="property-group">
-              <label>Country*</label>
-              <input
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>State*</label>
-              <input
-                name="state"
-        
-                value={formData.state}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>City*</label>
-              <input
-                name="city"
-        
-                value={formData.city}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="property-info">
-            <div className="property-group">
-              <label>Street Address*</label>
-              <input
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Landmark*</label>
-              <input
-                name="landmark"
-                
-                value={formData.landmark}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Zip Code*</label>
-              <input
-                name="zip"
-        
-                value={formData.zip}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="property-info">
-            <div className="property-group">
-              <label>No of Bedrooms*</label>
-              <input
-                name="bedrooms"
-                value={formData.bedrooms}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>No of Bathrooms*</label>
-              <input
-                name="bathrooms"
-                type="number"
-                value={formData.bathrooms}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Parking Space*</label>
-              <input
-                name="parking"
-        
-                value={formData.parking}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <h3>Special Prefrences</h3>
-          <div className="property-info">
-            <div className="property-group">
-              <label>Preferred Religion</label>
-              <input
-                name="religion"
-                value={formData.religion}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Preferred Tribe</label>
-              <input
-                name="tribe"
-                
-                value={formData.tribe}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Preferred Martial Status</label>
-              <input
-                name="martial"
-        
-                value={formData.marital}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="property-info">
-            <div className="property-group">
-              <label>Preferred Employment </label>
-              <input
-                name="employment"
-                value={formData.employment}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Maximum Co-residents</label>
-              <input
-                name="coResidents"
-                
-                value={formData.coResidents}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Preferred Gender</label>
-              <input
-                name="gender"
-        
-                value={formData.gender}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="property-info">
-            <div className="property-group">
-              <label>Select Category </label>
-              <input
-                name="sideCategory"
-                value={formData.sideCategory}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="property-group">
-              <label>Type name details</label>
-              <input
-                name="sideName"
-                
-                value={formData.sideName}
-                onChange={handleChange}
-              />
-            </div>
-           
+            {[
+              ["title", "Property title"],
+              ["year", "Year Built", "number"],
+              ["lga", "LGA"],
+              ["country", "Country"],
+              ["state", "State"],
+              ["city", "City"],
+              ["address", "Street Address"],
+              ["landmark", "Landmark"],
+              ["zip", "Zip Code"],
+              ["bedrooms", "No of Bedrooms"],
+              ["bathrooms", "No of Bathrooms", "number"],
+              ["parking", "Parking Space"]
+            ].map(([name, label, type = "text"]) => (
+              <div className="property-group" key={name}>
+                <label>{label}*</label>
+                <input
+                  name={name}
+                  type={type}
+                  value={formData[name]}
+                  onChange={handleChange}
+                />
+              </div>
+            ))}
           </div>
 
-          {/* Continue building out all the rest of the form fields in same pattern */}
+          {/* --- Special Preferences --- */}
+          <h3>Special Preferences</h3>
+          <div className="property-info">
+            {[
+              ["religion", "Preferred Religion"],
+              ["tribe", "Preferred Tribe"],
+              ["marital", "Preferred Marital Status"],
+              ["employment", "Preferred Employment"],
+              ["coResidents", "Maximum Co-residents"],
+              ["gender", "Preferred Gender"],
+              ["sideCategory", "Select Category"],
+              ["sideName", "Type Name Details"]
+            ].map(([name, label]) => (
+              <div className="property-group" key={name}>
+                <label>{label}</label>
+                <input
+                  name={name}
+                  value={formData[name]}
+                  onChange={handleChange}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* --- Agreement Checkboxes --- */}
           <div className="checkbox-group">
             <label>
               <input
@@ -359,9 +262,9 @@ const SubmitNewProperty = () => {
             Save and complete
           </button>
         </form>
-
       </div>
 
+      {/* --- Confirmation Modal --- */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -389,6 +292,3 @@ const SubmitNewProperty = () => {
 };
 
 export default SubmitNewProperty;
-
-
-        
