@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ← Import navigation
+import { useNavigate } from "react-router-dom";
 import "../../styles/MyProperties.css";
 
 const MyProperties = () => {
   const [properties, setProperties] = useState([]);
-  const navigate = useNavigate(); // ← Hook for routing
+  const navigate = useNavigate();
+  const userId = localStorage.getItem("userId"); // Replace with your auth logic
 
-  useEffect(() => { 
-    fetch("http://localhost:5000/api/properties")
-      .then(res => res.json())                                                                 
-      .then(data => setProperties(data));
-  }, []);
+  useEffect(() => {
+    fetch("https://breics-backend.onrender.com/api/properties")
+      .then(res => res.json())
+      .then(data => {
+        const userProperties = data.data.filter(p => p.userId === userId);
+        setProperties(userProperties);
+      })
+      .catch(err => console.error("Fetch error:", err));
+  }, [userId]);
 
   const handleRowClick = (id) => {
-    navigate(`/dashboard/property/${id}`); // ← Navigate to property details
+    navigate(`/dashboard/property/${id}`);
   };
 
   return (
@@ -74,7 +79,7 @@ const MyProperties = () => {
           {properties.map((p, i) => (
             <tr key={i} onClick={() => handleRowClick(p._id)} className="clickable-row">
               <td><img src={p.img} alt="apt" /><span>{p.title}</span></td>
-              <td>{p.location}</td>
+              <td>{p.location?.address}</td>
               <td>{p.type}</td>
               <td>{p.rent}</td>
               <td>

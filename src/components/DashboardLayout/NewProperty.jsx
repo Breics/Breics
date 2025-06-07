@@ -3,125 +3,268 @@ import "../../styles/NewProperty.css";
 
 const SubmitNewProperty = () => {
   const [formData, setFormData] = useState({
-    amount: "",
-    propertyType: "",
-    serviced: "Serviced",
     title: "",
-    year: "",
-    lga: "",
-    country: "",
-    state: "",
-    city: "",
-    address: "",
-    landmark: "",
-    zip: "",
-    bedrooms: "",
-    bathrooms: "",
-    parking: "",
-    religion: "",
-    tribe: "",
-    marital: "",
-    employment: "",
-    coResidents: "",
-    gender: "",
-    sideCategory: "",
-    sideName: "",
-    consent: false,
+    description: "",
+    propertyType: "",
+    status: "available",
+    price: "",
+    location: {
+      address: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "Nigeria",
+    },
+    rooms: {
+      bedrooms: "",
+      bathrooms: "",
+      kitchens: "",
+      livingRooms: "",
+      additionalRooms: [],
+    },
+    features: [],
+    amenities: [],
+    yearBuilt: "",
+    availableFrom: "",
+    availableTo: "",
+    rules: [],
     agreement: false,
   });
 
-  const [showModal, setShowModal] = useState(false);
+  const [feature, setFeature] = useState({
+    name: "",
+    description: "",
+    isHighlighted: false,
+  });
+  const [rule, setRule] = useState({
+    title: "",
+    description: "",
+    isRequired: false,
+  });
+  const [additionalRoom, setAdditionalRoom] = useState({
+    name: "",
+    description: "",
+  });
+  const [newAmenity, setNewAmenity] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [validationError, setValidationError] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+
+    if (name.includes("location.")) {
+      const key = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        location: {
+          ...prev.location,
+          [key]: value,
+        },
+      }));
+    } else if (name.includes("rooms.")) {
+      const key = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        rooms: {
+          ...prev.rooms,
+          [key]: value,
+        },
+      }));
+    } else if (name === "agreement") {
+      setFormData((prev) => ({
+        ...prev,
+        agreement: checked,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const validateForm = () => {
-    const requiredFields = [
-      "amount", "propertyType", "title", "year", "lga", "country", "state",
-      "city", "address", "landmark", "zip", "bedrooms", "bathrooms", "parking"
+    const required = [
+      "title",
+      "description",
+      "propertyType",
+      "price",
+      "yearBuilt",
     ];
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        return `Please fill in the ${field} field.`;
-      }
+    for (const key of required) {
+      if (!formData[key]) return `Please fill in the ${key} field.`;
     }
-    if (!formData.agreement) {
-      return "You must agree to the condition.";
-    }
+    if (!formData.agreement) return "You must agree to the condition.";
     return "";
   };
 
+  const addFeature = () => {
+    if (feature.name && feature.description) {
+      setFormData((prev) => ({
+        ...prev,
+        features: [...prev.features, feature],
+      }));
+      setFeature({ name: "", description: "", isHighlighted: false });
+    }
+  };
+
+  const removeFeature = (index) => {
+    // Added remove function
+    setFormData((prev) => ({
+      ...prev,
+      features: prev.features.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addRule = () => {
+    if (rule.title && rule.description) {
+      setFormData((prev) => ({
+        ...prev,
+        rules: [...prev.rules, rule],
+      }));
+      setRule({ title: "", description: "", isRequired: false });
+    }
+  };
+
+  const removeRule = (index) => {
+    // Added remove function
+    setFormData((prev) => ({
+      ...prev,
+      rules: prev.rules.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addAdditionalRoom = () => {
+    if (additionalRoom.name && additionalRoom.description) {
+      setFormData((prev) => ({
+        ...prev,
+        rooms: {
+          ...prev.rooms,
+          additionalRooms: [...prev.rooms.additionalRooms, additionalRoom],
+        },
+      }));
+      setAdditionalRoom({ name: "", description: "" });
+    }
+  };
+
+  const removeAdditionalRoom = (index) => {
+    // Added remove function
+    setFormData((prev) => ({
+      ...prev,
+      rooms: {
+        ...prev.rooms,
+        additionalRooms: prev.rooms.additionalRooms.filter(
+          (_, i) => i !== index
+        ),
+      },
+    }));
+  };
+
+  const addAmenity = () => {
+    if (newAmenity) {
+      setFormData((prev) => ({
+        ...prev,
+        amenities: [...prev.amenities, newAmenity],
+      }));
+      setNewAmenity("");
+    }
+  };
+
+  const removeAmenity = (index) => {
+    // Added remove function
+    setFormData((prev) => ({
+      ...prev,
+      amenities: prev.amenities.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleFormSubmit = async () => {
-    console.log("Submitting form...");
     const error = validateForm();
     if (error) {
       setValidationError(error);
       return;
     }
-
+  
+    const transformedData = {
+      ...formData,
+      price: Number(formData.price),
+      yearBuilt: Number(formData.yearBuilt),
+      rooms: {
+        ...formData.rooms,
+        bedrooms: Number(formData.rooms.bedrooms),
+        bathrooms: Number(formData.rooms.bathrooms),
+        kitchens: Number(formData.rooms.kitchens),
+        livingRooms: Number(formData.rooms.livingRooms),
+        additionalRooms: formData.rooms.additionalRooms,
+      },
+    };
+  
     try {
-        const token = localStorage.getItem("token");
+      console.log(transformedData);
+      const token = localStorage.getItem("token");
       const res = await fetch("https://breics-backend.onrender.com/api/properties", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(transformedData),
       });
-
+  
       const result = await res.json();
-
       if (res.ok) {
         setSuccessMsg("Property submitted successfully!");
         setErrorMsg("");
         setValidationError("");
+        setShowModal(false);
+
+        // Reset form data
         setFormData({
-          amount: "",
-          propertyType: "",
-          serviced: "Serviced",
           title: "",
-          year: "",
-          lga: "",
-          country: "",
-          state: "",
-          city: "",
-          address: "",
-          landmark: "",
-          zip: "",
-          bedrooms: "",
-          bathrooms: "",
-          parking: "",
-          religion: "",
-          tribe: "",
-          marital: "",
-          employment: "",
-          coResidents: "",
-          gender: "",
-          sideCategory: "",
-          sideName: "",
-          consent: false,
+          description: "",
+          propertyType: "",
+          status: "available",
+          price: "",
+          location: {
+            address: "",
+            city: "",
+            state: "",
+            postalCode: "",
+            country: "Nigeria",
+          },
+          rooms: {
+            bedrooms: "",
+            bathrooms: "",
+            kitchens: "",
+            livingRooms: "",
+            additionalRooms: [],
+          },
+          features: [],
+          amenities: [],
+          yearBuilt: "",
+          availableFrom: "",
+          availableTo: "",
+          rules: [],
           agreement: false,
         });
+      
+        // Reset other form-related states
+        setFeature({ name: "", description: "", isHighlighted: false });
+        setRule({ title: "", description: "", isRequired: false });
+        setAdditionalRoom({ name: "", description: "" });
+        setNewAmenity("");
       } else {
-        setErrorMsg(result.message || "An error occurred while submitting.");
-        setSuccessMsg("");
+        setErrorMsg(result.message || "An error occurred.");
       }
-    } catch (err) {
-      setErrorMsg("Failed to connect to the server.");
-      setSuccessMsg("");
+    } catch {
+      setErrorMsg("Server error.");
     }
-
     setShowModal(false);
   };
+  
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -131,159 +274,234 @@ const SubmitNewProperty = () => {
   return (
     <div className="submit-container">
       <h2>Submit New Property</h2>
-
       {successMsg && <p className="success-msg">{successMsg}</p>}
       {errorMsg && <p className="error-msg">{errorMsg}</p>}
       {validationError && <p className="validation-msg">{validationError}</p>}
 
-      <div className="submit-wrapper">
-        <form className="form-section" onSubmit={handleSubmit}>
-          <h3>General Information</h3>
+      <form onSubmit={handleSubmit} className="form-section">
+        <h3>General Info</h3>
+        <input
+          name="title"
+          placeholder="Title"
+          value={formData.title}
+          onChange={handleChange}
+        />
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={formData.description}
+          onChange={handleChange}
+        />
+        
+        <input
+          name="propertyType"
+          type="text"
+          placeholder="Property type"
+          value={formData.propertyType}
+          onChange={handleChange}
+        />
 
-          <label>Amount*</label>
+        <input
+          name="price"
+          type="number"
+          placeholder="Price"
+          value={formData.price}
+          onChange={handleChange}
+        />
+        <input
+          name="yearBuilt"
+          type="number"
+          placeholder="Year Built"
+          value={formData.yearBuilt}
+          onChange={handleChange}
+        />
+        <input
+          name="availableFrom"
+          type="date"
+          value={formData.availableFrom}
+          onChange={handleChange}
+        />
+        <input
+          name="availableTo"
+          type="date"
+          value={formData.availableTo}
+          onChange={handleChange}
+        />
+
+        <h3>Location</h3>
+        {["address", "city", "state", "postalCode", "country"].map((field) => (
           <input
-            name="amount"
-            type="number"
-            value={formData.amount}
+            key={field}
+            name={`location.${field}`}
+            placeholder={field}
+            value={formData.location[field]}
             onChange={handleChange}
           />
+        ))}
 
-          <label>Property type*</label>
-          <select
-            name="propertyType"
-            value={formData.propertyType}
+        <h3>Rooms</h3>
+        {["bedrooms", "bathrooms", "kitchens", "livingRooms"].map((room) => (
+          <input
+            key={room}
+            name={`rooms.${room}`}
+            type="number"
+            placeholder={room}
+            value={formData.rooms[room]}
             onChange={handleChange}
-            className="sel"
-          >
-            <option value="">Select property type</option>
-            <option>2 Bedroom</option>
-            <option>3 Bedroom</option>
-          </select>
+          />
+        ))}
 
-          <div className="radio-group">
-            <label>
-              <input
-                type="radio"
-                name="serviced"
-                value="Serviced"
-                checked={formData.serviced === "Serviced"}
-                onChange={handleChange}
-              />{" "}
-              Serviced
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="serviced"
-                value="Unserviced"
-                checked={formData.serviced === "Unserviced"}
-                onChange={handleChange}
-              />{" "}
-              Unserviced
-            </label>
+        <h4>Add Additional Room</h4>
+        <input
+          placeholder="Room Name"
+          value={additionalRoom.name}
+          onChange={(e) =>
+            setAdditionalRoom((r) => ({ ...r, name: e.target.value }))
+          }
+        />
+        <input
+          placeholder="Description"
+          value={additionalRoom.description}
+          onChange={(e) =>
+            setAdditionalRoom((r) => ({ ...r, description: e.target.value }))
+          }
+        />
+        <button type="button" onClick={addAdditionalRoom}>
+          + Add Room
+        </button>
+
+        {formData.rooms.additionalRooms.map((room, i) => (
+          <div key={i}>
+            <span>
+              {room.name}: {room.description}
+            </span>
+            <button type="button" onClick={() => removeAdditionalRoom(i)}>
+              ❌
+            </button>{" "}
+            {/* Added remove button */}
           </div>
+        ))}
 
-          {/* --- Property Info --- */}
-          <h3>Property Information</h3>
-          <div className="property-info">
-            {[
-              ["title", "Property title"],
-              ["year", "Year Built", "number"],
-              ["lga", "LGA"],
-              ["country", "Country"],
-              ["state", "State"],
-              ["city", "City"],
-              ["address", "Street Address"],
-              ["landmark", "Landmark"],
-              ["zip", "Zip Code"],
-              ["bedrooms", "No of Bedrooms"],
-              ["bathrooms", "No of Bathrooms", "number"],
-              ["parking", "Parking Space"]
-            ].map(([name, label, type = "text"]) => (
-              <div className="property-group" key={name}>
-                <label>{label}*</label>
-                <input
-                  name={name}
-                  type={type}
-                  value={formData[name]}
-                  onChange={handleChange}
-                />
-              </div>
-            ))}
+        <h3>Features</h3>
+        <input
+          placeholder="Feature Name"
+          value={feature.name}
+          onChange={(e) => setFeature((f) => ({ ...f, name: e.target.value }))}
+        />
+        <input
+          placeholder="Description"
+          value={feature.description}
+          onChange={(e) =>
+            setFeature((f) => ({ ...f, description: e.target.value }))
+          }
+        />
+        <label>
+          Highlighted
+          <input
+            type="checkbox"
+            checked={feature.isHighlighted}
+            onChange={(e) =>
+              setFeature((f) => ({ ...f, isHighlighted: e.target.checked }))
+            }
+          />
+        </label>
+        <button type="button" onClick={addFeature}>
+          + Add Feature
+        </button>
+
+        {formData.features.map((f, i) => (
+          <div key={i}>
+            <span>
+              {f.name}: {f.description} {f.isHighlighted && "(Highlighted)"}
+            </span>
+            <button type="button" onClick={() => removeFeature(i)}>
+              ❌
+            </button>{" "}
+            {/* Added remove button */}
           </div>
+        ))}
 
-          {/* --- Special Preferences --- */}
-          <h3>Special Preferences</h3>
-          <div className="property-info">
-            {[
-              ["religion", "Preferred Religion"],
-              ["tribe", "Preferred Tribe"],
-              ["marital", "Preferred Marital Status"],
-              ["employment", "Preferred Employment"],
-              ["coResidents", "Maximum Co-residents"],
-              ["gender", "Preferred Gender"],
-              ["sideCategory", "Select Category"],
-              ["sideName", "Type Name Details"]
-            ].map(([name, label]) => (
-              <div className="property-group" key={name}>
-                <label>{label}</label>
-                <input
-                  name={name}
-                  value={formData[name]}
-                  onChange={handleChange}
-                />
-              </div>
-            ))}
+        <h3>Amenities</h3>
+        <input
+          placeholder="Amenity (e.g., WiFi)"
+          value={newAmenity}
+          onChange={(e) => setNewAmenity(e.target.value)}
+        />
+        <button type="button" onClick={addAmenity}>
+          + Add Amenity
+        </button>
+
+        {formData.amenities.map((a, i) => (
+          <div key={i}>
+            <span>{a}</span>
+            <button type="button" onClick={() => removeAmenity(i)}>
+              ❌
+            </button>{" "}
+            {/* Added remove button */}
           </div>
+        ))}
 
-          {/* --- Agreement Checkboxes --- */}
-          <div className="checkbox-group">
-            <label>
-              <input
-                type="checkbox"
-                name="consent"
-                checked={formData.consent}
-                onChange={handleChange}
-              />{" "}
-              I have the consent...
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="agreement"
-                checked={formData.agreement}
-                onChange={handleChange}
-              />{" "}
-              I agree to the condition...
-            </label>
+        <h3>Rules</h3>
+        <input
+          placeholder="Rule Title"
+          value={rule.title}
+          onChange={(e) => setRule((r) => ({ ...r, title: e.target.value }))}
+        />
+        <input
+          placeholder="Rule Description"
+          value={rule.description}
+          onChange={(e) =>
+            setRule((r) => ({ ...r, description: e.target.value }))
+          }
+        />
+        <label>
+          Required
+          <input
+            type="checkbox"
+            checked={rule.isRequired}
+            onChange={(e) =>
+              setRule((r) => ({ ...r, isRequired: e.target.checked }))
+            }
+          />
+        </label>
+        <button type="button" onClick={addRule}>
+          + Add Rule
+        </button>
+
+        {formData.rules.map((r, i) => (
+          <div key={i}>
+            <span>
+              {r.title}: {r.description} {r.isRequired && "(Required)"}
+            </span>
+            <button type="button" onClick={() => removeRule(i)}>
+              ❌
+            </button>{" "}
+            {/* Added remove button */}
           </div>
+        ))}
 
-          <button type="submit" className="submit-btn">
-            Save and complete
-          </button>
-        </form>
-      </div>
+        <label>
+          <input
+            type="checkbox"
+            name="agreement"
+            checked={formData.agreement}
+            onChange={handleChange}
+          />{" "}
+          I agree to the condition...
+        </label>
 
-      {/* --- Confirmation Modal --- */}
+        <button type="submit" className="submit-btn">
+          Submit Property
+        </button>
+      </form>
+
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <div className="modal-icon">
-              <img src="/icons/house-user.svg" alt="confirm" />
-            </div>
-            <h3>Confirm Property Submission</h3>
-            <p>Do you want to list this property on Breics?</p>
-            <div className="modal-actions">
-              <button className="confirm-btn" onClick={handleFormSubmit}>
-                Yes! List my property
-              </button>
-              <button
-                className="cancel-btn"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
+            <h3>Confirm Submission</h3>
+            <p>Do you want to list this property?</p>
+            <button onClick={handleFormSubmit}>Yes, Submit</button>
+            <button onClick={() => setShowModal(false)}>Cancel</button>
           </div>
         </div>
       )}
