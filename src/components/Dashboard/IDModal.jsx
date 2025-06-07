@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import "../../styles/IDModal.css";
 
-const IDUploadModal = ({ type, onClose, onSubmit }) => {
-  const [idNumber, setIdNumber] = useState("");
+const IDUploadModal = ({ idType, onClose, onSubmit }) => {
+  const [documentNumber, setdocumentNumber] = useState("");
   const [idFile, setIdFile] = useState(null);
 
   const getTitle = () => {
-    switch (type) {
+    switch (idType) {
       case "driver":
         return "Driver’s Licence Number";
       case "nin":
@@ -19,7 +19,7 @@ const IDUploadModal = ({ type, onClose, onSubmit }) => {
   };
 
   const getPlaceholder = () => {
-    switch (type) {
+    switch (idType) {
       case "driver":
         return "Enter your Driver’s Licence Number";
       case "nin":
@@ -32,7 +32,7 @@ const IDUploadModal = ({ type, onClose, onSubmit }) => {
   };
 
   const getFileLabel = () => {
-    switch (type) {
+    switch (idType) {
       case "driver":
         return "Upload Image of Driver’s Licence";
       case "nin":
@@ -54,17 +54,18 @@ const IDUploadModal = ({ type, onClose, onSubmit }) => {
   };
 
   const handleSubmit = () => {
-    if (!idNumber || !idFile) {
+    if (!documentNumber || !idFile) {
       alert("Please fill in all fields.");
       return;
     }
-
+  
     // Match backend field expectations
     onSubmit({
-      id_number: idNumber,
-      id_image: idFile,
+      documentNumber,
+      document: idFile,
     });
   };
+  
 
   return (
     <div className="modal-overlay">
@@ -73,8 +74,8 @@ const IDUploadModal = ({ type, onClose, onSubmit }) => {
         <input
           type="text"
           placeholder={getPlaceholder()}
-          value={idNumber}
-          onChange={(e) => setIdNumber(e.target.value)}
+          value={documentNumber}
+          onChange={(e) => setdocumentNumber(e.target.value)}
         />
 
         <div className="file-upload">

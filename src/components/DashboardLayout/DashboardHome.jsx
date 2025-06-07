@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ChartCard from './DashCard';
+import axios from 'axios';
 
 const defaultDashboardData = {
   totalProperties: {
@@ -26,40 +27,46 @@ const defaultDashboardData = {
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(defaultDashboardData);
-  const [userName, setUserName] = useState('User');
+  const [userData, setUserData] = useState({
+    firstName: '',
+    isVerified: false,
+    accountType: '',
+  });
 
   useEffect(() => {
-    const userId = localStorage.getItem('user_id'); // landlord_id
-    if (!userId) return;
+    const userId = localStorage.getItem('user_id');
+    const token = localStorage.getItem('token');
+    if (!userId || !token) {
+      console.warn('User ID or token not found in localStorage.');
+      return;
+    }
 
-    const fetchUserName = async () => {
-      try {
-        const res = await fetch('http://localhost/breicsk/backk/get_user_info.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ user_id: parseInt(userId) }),
+    // Fetch user data
+    axios
+      .get(`https://breics-backend.onrender.com/api/landlords/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        const landlord = res.data.data.landlord;
+        setUserData({
+          firstName: landlord.firstName || '',
+          isVerified: landlord.verificationStatus?.isVerified || false,
+          accountType: landlord.accountType || '',
         });
+      })
+      .catch((err) => {
+        console.error('Failed to fetch user data in Dashboard:', err.response?.data || err.message);
+      });
 
-        const result = await res.json();
-        if (result.success) {
-          setUserName(result.data.full_name);
-        } else {
-          console.warn(result.message);
-        }
-      } catch (err) {
-        console.error('Error fetching user name:', err.message);
-      }
-    };
-
+    // Fetch dashboard stats
     const fetchDashboardData = async () => {
       try {
         const res = await fetch(`http://localhost/breicsk/backk/fetch_landlord_statdata.php`);
         if (!res.ok) throw new Error('Failed to fetch dashboard stats');
-
         const data = await res.json();
 
-        // Reshape backend data into the format expected by the UI
         const reshapedData = {
           totalProperties: {
             occupied: data.properties.occupied,
@@ -89,9 +96,8 @@ const Dashboard = () => {
       }
     };
 
-    fetchUserName();
     fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 5000);
+    const interval = setInterval(fetchDashboardData, 5000); // auto-refresh every 5 sec
     return () => clearInterval(interval);
   }, []);
 
@@ -99,7 +105,7 @@ const Dashboard = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>Hi {userName} 👋</h2>
+      <h2>Hi {userData.firstName} 👋</h2>
       <h1>Dashboard</h1>
 
       <div className="cards" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>

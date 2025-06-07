@@ -46,6 +46,8 @@ const IDVerification = () => {
   };
 
   const handleSaveAndFinish = async () => {
+    const token = localStorage.getItem("token");
+
     if (!idData || !user?._id) {
       alert("Missing required data.");
       return;
@@ -53,9 +55,10 @@ const IDVerification = () => {
 
     const formData = new FormData();
     formData.append("user_id", user._id);
-    formData.append("id_type", selectedIDType);
-    formData.append("id_number", idData.id_number);
-    formData.append("id_image", idData.id_image); // File object
+    formData.append("idType", selectedIDType); // backend expects 'idType'
+    formData.append("documentNumber", idData.documentNumber); // backend expects 'documentNumber'
+    formData.append("document", idData.document); // backend expects 'document'
+    
 
     try {
       const response = await axios.post(
@@ -64,12 +67,15 @@ const IDVerification = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         }
       );
       
       if (response.data.success) {
         alert("Verification info submitted successfully.");
+        navigate("/dashboard")
       
       } else {
         alert("Submission failed: " + response.data.message);
@@ -116,15 +122,17 @@ const IDVerification = () => {
             <p>Select the document you wish to be identified with</p>
             <div className="id-options">
               <label>
-                <input type="radio" name="idType" onChange={() => handleIDTypeSelect("driver")} />
+              <input type="radio" name="idType" onChange={() => handleIDTypeSelect("driver_license")} />
                 Driver’s Licence
               </label>
               <label>
-                <input type="radio" name="idType" onChange={() => handleIDTypeSelect("nin")} />
+              <input type="radio" name="idType" onChange={() => handleIDTypeSelect("national_id")} />
+
                 National Identity Number (NIN)
               </label>
               <label>
-                <input type="radio" name="idType" onChange={() => handleIDTypeSelect("voter")} />
+              <input type="radio" name="idType" onChange={() => handleIDTypeSelect("voter_card")} />
+
                 Voter’s card
               </label>
             </div>
