@@ -41,7 +41,7 @@ const Dashboard = () => {
       return;
     }
 
-    // Fetch user data
+    // Fetch user info
     axios
       .get(`https://breics-backend.onrender.com/api/landlords/${userId}`, {
         headers: {
@@ -57,47 +57,42 @@ const Dashboard = () => {
         });
       })
       .catch((err) => {
-        console.error('Failed to fetch user data in Dashboard:', err.response?.data || err.message);
+        console.error('Failed to fetch user data:', err.response?.data || err.message);
       });
 
-    // Fetch dashboard stats
+    // Fetch properties and update stats
     const fetchDashboardData = async () => {
       try {
-        const res = await fetch(`http://localhost/breicsk/backk/fetch_landlord_statdata.php`);
-        if (!res.ok) throw new Error('Failed to fetch dashboard stats');
-        const data = await res.json();
+        const response = await axios.get(`https://breics-backend.onrender.com/api/properties`);
+        const allProperties = response.data.data;
 
-        const reshapedData = {
+        // Filter properties belonging to the current user
+        const userProperties = allProperties.filter(
+          (property) => String(property.owner?._id) === String(userId)
+        );
+
+        const occupied = userProperties.filter((p) => p.occupied).length;
+        const vacant = userProperties.filter((p) => !p.occupied && p.verified).length;
+        const pending = userProperties.filter((p) => !p.verified).length;
+
+        const updatedData = {
+          ...defaultDashboardData,
           totalProperties: {
-            occupied: data.properties.occupied,
-            vacant: data.properties.vacant,
-            pending: data.properties.pending,
-            total: data.properties.occupied + data.properties.vacant + data.properties.pending,
-          },
-          rentalIncome: {
-            paid: data.rental_income.paid,
-            overdue: data.rental_income.overdue,
-          },
-          tenants: {
-            active: data.tenants.active,
-            inactive: data.tenants.inactive,
-            total: data.tenants.active + data.tenants.inactive,
-          },
-          tickets: {
-            open: data.tickets.open,
-            closed: data.tickets.closed,
-            total: data.tickets.open + data.tickets.closed,
+            occupied,
+            vacant,
+            pending,
+            total: userProperties.length,
           },
         };
 
-        setDashboardData(reshapedData);
-      } catch (err) {
-        console.warn('Using fallback data:', err.message);
+        setDashboardData(updatedData);
+      } catch (error) {
+        console.error('Error fetching properties for dashboard:', error.message);
       }
     };
 
     fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 5000); // auto-refresh every 5 sec
+    const interval = setInterval(fetchDashboardData, 5000); // Auto-refresh every 5 seconds
     return () => clearInterval(interval);
   }, []);
 

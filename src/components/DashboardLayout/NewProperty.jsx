@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import "../../styles/NewProperty.css";
+import { useNavigate } from "react-router-dom";
 
 const SubmitNewProperty = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -216,6 +218,7 @@ const SubmitNewProperty = () => {
       const result = await res.json();
       if (res.ok) {
         setSuccessMsg("Property submitted successfully!");
+        navigate("/dashboard/properties", { state: { newSubmitted: true } });
         setErrorMsg("");
         setValidationError("");
         setShowModal(false);
