@@ -8,20 +8,20 @@ import ResetPassword from "./Pages/Reset";
 import Dashboard from "./Pages/Dashboard";
 import VerifyAccount from "./Pages/verifyPage";
 import IDVerification from "./Pages/IDVerification";
-import DashboardLayout from "./Pages/DashboardLayOut";
-import DashboardHome from "./components/DashboardLayout/DashboardHome";
-import Application from "./components/DashboardLayout/Application";
-import MyProperties from "./components/DashboardLayout/Properties";
-import TenantDashboard from "./components/DashboardLayout/Tenants";
-import Payments from "./components/DashboardLayout/Payments";
-import Adminstrator from "./components/DashboardLayout/Adminstrator";
-import FacilityDashboard from "./components/DashboardLayout/Facility";
-import SupportDashboard from "./components/DashboardLayout/Support";
-import AccountProfile from "./components/DashboardLayout/Account";
-import InspectionRequests from "./components/DashboardLayout/inspection";
-import SubmitNewProperty from "./components/DashboardLayout/NewProperty";
-import PropertyDetails from "./components/DashboardLayout/PropertyDetails";
-import TenantProfile from "./components/DashboardLayout/TenantProfile";
+import DashboardLayout from "./Pages/Dashbooard_For_Landlord";
+import DashboardHome from "./components/Dashbooard_For_Landlord/DashboardHome";
+import Application from "./components/Dashbooard_For_Landlord/Application";
+import MyProperties from "./components/Dashbooard_For_Landlord/Properties";
+import TenantDashboard from "./components/Dashbooard_For_Landlord/Tenants";
+import Payments from "./components/Dashbooard_For_Landlord/Payments";
+import Adminstrator from "./components/Dashbooard_For_Landlord/Adminstrator";
+import FacilityDashboard from "./components/Dashbooard_For_Landlord/Facility";
+import SupportDashboard from "./components/Dashbooard_For_Landlord/Support";
+import AccountProfile from "./components/Dashbooard_For_Landlord/Account";
+import InspectionRequests from "./components/Dashbooard_For_Landlord/inspection";
+import SubmitNewProperty from "./components/Dashbooard_For_Landlord/NewProperty";
+import PropertyDetails from "./components/Dashbooard_For_Landlord/PropertyDetails";
+import TenantProfile from "./components/Dashbooard_For_Landlord/TenantProfile";
 
 function App() {
   return (
