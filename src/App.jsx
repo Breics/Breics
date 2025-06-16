@@ -8,7 +8,7 @@ import ResetPassword from "./Pages/Reset";
 import Dashboard from "./Pages/Dashboard";
 import VerifyAccount from "./Pages/verifyPage";
 import IDVerification from "./Pages/IDVerification";
-import DashboardLayout from "./Pages/Dashbooard_For_Landlord";
+import DashboardLayout from "./Pages/DashboardLayOut"
 import DashboardHome from "./components/Dashbooard_For_Landlord/DashboardHome";
 import Application from "./components/Dashbooard_For_Landlord/Application";
 import MyProperties from "./components/Dashbooard_For_Landlord/Properties";
