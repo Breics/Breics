@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../../styles/DashBody.css";
 import { FaIdCard } from "react-icons/fa";
-// import { HiArrowNarrowRight } from "react-icons/hi";
+import { motion } from "framer-motion";
 
 const DashBody = () => {
   const [userData, setUserData] = useState({
@@ -27,8 +26,6 @@ const DashBody = () => {
         },
       })
       .then((res) => {
-        console.log("Fetched landlord data:", res.data);
-
         const landlord = res.data.data.landlord;
         setUserData({
           firstName: landlord.firstName || "",
@@ -45,27 +42,54 @@ const DashBody = () => {
   }, []);
 
   return (
-    <div className="dashboard-container">
-      <h2>Hello {userData.firstName},</h2>
-      <p className="dashboard-subtext">
+    <div className="max-w-3xl mx-auto px-4 py-10 text-gray-900">
+      <motion.h2
+        className="text-2xl md:text-3xl font-semibold mb-2"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        Hello {userData.firstName},
+      </motion.h2>
+
+      <motion.p
+        className="text-gray-600 mb-8 max-w-xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+      >
         Welcome to Breics. Kindly complete your account setup...
-      </p>
+      </motion.p>
 
       {!userData.isVerified && (
-        <div className="dashboard-card">
-          <div className="dashboard-card-icon">
-            <FaIdCard size={24} color="#f59e0b" />
+        <motion.div
+          className="flex flex-col md:flex-row gap-4 md:gap-6 bg-orange-50 p-5 rounded-lg shadow border border-orange-100"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
+          <div className="mt-1">
+            <FaIdCard size={24} className="text-orange-500" />
           </div>
-          <div className="dashboard-card-content">
-            <h4>Complete account verification</h4>
-            <p>As an intending landlord, you need to verify your account...</p>
+
+          <div className="flex-1">
+            <h4 className="text-lg font-semibold text-gray-900">
+              Complete account verification
+            </h4>
+            <p className="text-sm text-gray-600">
+              As an intending landlord, you need to verify your account...
+            </p>
           </div>
-          <div className="dashboard-card-action">
-            <a href="/verify-account" className="verify-link">
-              Verify account 
+
+          <div className="self-start md:self-center">
+            <a
+              href="/verify-account"
+              className="text-sm font-medium text-orange-500 hover:underline transition"
+            >
+              Verify account
             </a>
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );

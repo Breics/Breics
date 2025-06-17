@@ -310,7 +310,7 @@ const Login = () => {
           </button>
 
           {isLogin && (
-            <a href="/reset-password" className="forgot-password">
+            <a href="/forgot-password" className="forgot-password">
               Forgot password?
             </a>
           )}
