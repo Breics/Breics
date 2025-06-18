@@ -285,6 +285,7 @@ const Login = () => {
             required
             className="border border-gray-300 rounded px-3 py-2"
           />
+          
 
           {!isLogin && (
             <>
@@ -297,6 +298,9 @@ const Login = () => {
                 required
                 className="border border-gray-300 rounded px-3 py-2"
               />
+               <p className="text-xs text-gray-500 mt-1">
+                Password must contain at least 8 characters, including uppercase, lowercase, number, and special character (!@#$%^&*).
+              </p>
               <label className="text-sm flex items-center gap-2">
                 <input
                   type="checkbox"
