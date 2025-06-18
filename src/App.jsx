@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landingpage from "./Pages/LandingPage";
 import PropertyListing from "./Pages/PropertyListing";
 import LandLordPage from "./Pages/LandLordPage";
+import TenantReduxProvider from "./components/Tenant/redux/TenantReduxProvider";
 import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/Forgot";
 import ResetPassword from "./Pages/Reset";
@@ -12,7 +13,7 @@ import DashboardLayout from "./Pages/DashboardLayOut"
 import DashboardHome from "./components/Dashbooard_For_Landlord/DashboardHome";
 import Application from "./components/Dashbooard_For_Landlord/Application";
 import MyProperties from "./components/Dashbooard_For_Landlord/Properties";
-import TenantDashboard from "./components/Dashbooard_For_Landlord/Tenants";
+import LandlordTenantsDashboard from "./components/Dashbooard_For_Landlord/Tenants";
 import Payments from "./components/Dashbooard_For_Landlord/Payments";
 // import Adminstrator from "./components/Dashbooard_For_Landlord/Adminstrator";
 import FacilityDashboard from "./components/Dashbooard_For_Landlord/Facility";
@@ -22,15 +23,26 @@ import InspectionRequests from "./components/Dashbooard_For_Landlord/inspection"
 import SubmitNewProperty from "./components/Dashbooard_For_Landlord/NewProperty";
 import PropertyDetails from "./components/Dashbooard_For_Landlord/PropertyDetails";
 import TenantProfile from "./components/Dashbooard_For_Landlord/TenantProfile";
+import SignupPage from "./components/Tenant/Auth/signup";
+import LoginPage from "./components/Tenant/Auth/login";
+import VerifyEmailPage from "./components/Tenant/Auth/verifyEmail";
+import TenantDashboard from "./components/Tenant/Dashboard/TenantDashboard";
+import CompleteProfile from "./components/Tenant/Profile/CompleteProfile";
 
 function App() {
   return (
-    <Router>
-      <Routes>
+    <TenantReduxProvider>
+      <Router>
+        <Routes>
         <Route path="/" element={<Landingpage />} />
         <Route path="/find-property" element={<PropertyListing />} />
         <Route path="/list-property" element={<LandLordPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/tenant/signup" element={<SignupPage />} />
+        <Route path="/tenant/login" element={<LoginPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/tenant/complete-profile" element={<CompleteProfile />} />
+        <Route path="/tenant/dashboard" element={<TenantDashboard />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify" element={<Dashboard />} />
@@ -43,7 +55,7 @@ function App() {
           <Route path="dashboard-home" element={<DashboardHome />} />
           <Route path="application" element={<Application />} />
           <Route path="properties" element={<MyProperties />} />
-          <Route path="tenants" element={<TenantDashboard />} />
+          <Route path="tenants" element={<LandlordTenantsDashboard />} />
           <Route path="payments" element={<Payments/>} />
           {/* <Route path="admin" element={<Adminstrator/>} /> */}
           <Route path="facility" element={<FacilityDashboard/>} />
@@ -56,8 +68,9 @@ function App() {
 
 
         </Route>
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </TenantReduxProvider>
   );
 }
 
