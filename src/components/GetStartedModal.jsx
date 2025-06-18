@@ -12,6 +12,13 @@ const GetStartedModal = ({ isOpen, onClose }) => {
     onClose(); // Close modal first
     setTimeout(() => navigate(path), 100); // Short delay ensures modal disappears smoothly
   };
+  
+  // Handle tenant signup button click
+  const handleTenantSignup = () => {
+    onClose(); // Close modal first
+    navigate('/tenant/signup'); // Navigate to the tenant signup page
+  };
+  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -30,14 +37,14 @@ const GetStartedModal = ({ isOpen, onClose }) => {
           </button>
 
           <button
-            onClick={() => handleRoute('/signup/tenant')}
+            onClick={handleTenantSignup}
             className="flex items-center justify-between px-4 py-3 rounded-md border border-orange-500 hover:bg-orange-500 hover:text-white transition"
           >
             <span className="flex items-center gap-3 font-semibold">
               <FaHome size={20} />
               Tenant / Renter
             </span>
-            <span className="text-xs text-gray-500">Find a property</span>
+            <span className="text-xs text-gray-500">Sign up</span>
           </button>
         </div>
 
