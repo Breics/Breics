@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../../styles/MyProperties.css";
 
 const MyProperties = () => {
   const location = useLocation();
@@ -26,13 +25,8 @@ const MyProperties = () => {
       .catch((err) => console.error("Fetch error:", err));
   }, [userId, location.state]);
 
-  const handleRowClick = (id) => {
-    navigate(`/dashboard/property/${id}`);
-  };
-
-  const handleEdit = (id) => {
-    navigate(`/dashboard/edit-property/${id}`);
-  };
+  const handleRowClick = (id) => navigate(`/dashboard/property/${id}`);
+  const handleEdit = (id) => navigate(`/dashboard/edit-property/${id}`);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
@@ -41,11 +35,9 @@ const MyProperties = () => {
         method: "DELETE",
       });
       if (res.ok) {
-        setProperties(prev => prev.filter(p => p._id !== id));
+        setProperties((prev) => prev.filter((p) => p._id !== id));
         alert("Property deleted successfully.");
-      } else {
-        alert("Failed to delete property.");
-      }
+      } else alert("Failed to delete property.");
     } catch (err) {
       console.error(err);
       alert("Error deleting property.");
@@ -68,127 +60,199 @@ const MyProperties = () => {
     currentPage * itemsPerPage
   );
 
-  const goToNext = () => {
-    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
-  };
-
-  const goToPrev = () => {
-    if (currentPage > 1) setCurrentPage(prev => prev - 1);
-  };
-
   return (
-    <div className="properties-container">
-      <div className="header-row">
-        <h2>My Properties</h2>
-        <div className="action-buttons">
-          <button className="verify-btn">Verify Property</button>
-          <a href="/dashboard/new-property" className="new-btn">List new property</a>
+    <div className="max-w-[1400px] mx-auto p-4 sm:p-6 md:p-8 font-sans text-gray-800">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <h2 className="text-xl font-semibold">My Properties</h2>
+        <div className="flex flex-wrap gap-3">
+          <button className="border border-orange-500 text-orange-500 px-4 py-2 rounded hover:bg-orange-50 text-sm font-medium">
+            Verify Property
+          </button>
+          <a
+            href="/dashboard/new-property"
+            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 text-sm font-medium"
+          >
+            List new property
+          </a>
         </div>
       </div>
 
-      <div className="stats-row">
-        <div className="stat-card">
-          <span className="icon home" />
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="flex items-center bg-white p-4 rounded shadow-sm">
+          <div className="w-9 h-9 rounded-full bg-orange-100 mr-3" />
           <div>
-            <h4>{properties.length}</h4>
-            <p>Total properties</p>
+            <h4 className="text-lg font-semibold">{properties.length}</h4>
+            <p className="text-sm text-gray-500">Total properties</p>
           </div>
         </div>
-        <div className="stat-card">
-          <span className="icon occupied" />
+        <div className="flex items-center bg-white p-4 rounded shadow-sm">
+          <div className="w-9 h-9 rounded-full bg-teal-100 mr-3" />
           <div>
-            <h4>{properties.filter((p) => p.occupied).length}</h4>
-            <p>Occupied properties</p>
+            <h4 className="text-lg font-semibold">
+              {properties.filter((p) => p.occupied).length}
+            </h4>
+            <p className="text-sm text-gray-500">Occupied properties</p>
           </div>
         </div>
-        <div className="stat-card">
-          <span className="icon unoccupied" />
+        <div className="flex items-center bg-white p-4 rounded shadow-sm">
+          <div className="w-9 h-9 rounded-full bg-red-100 mr-3" />
           <div>
-            <h4>{properties.filter((p) => !p.occupied).length}</h4>
-            <p>Unoccupied properties</p>
+            <h4 className="text-lg font-semibold">
+              {properties.filter((p) => !p.occupied).length}
+            </h4>
+            <p className="text-sm text-gray-500">Unoccupied properties</p>
           </div>
         </div>
       </div>
 
-      <div className="table-controls">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 mb-4">
         <input
+          type="text"
           placeholder="Search property"
+          className="px-3 py-2 border border-gray-300 rounded w-[150px] text-sm"
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
         />
-        <select value={propertyTypeFilter} onChange={(e) => {
-          setPropertyTypeFilter(e.target.value);
-          setCurrentPage(1);
-        }}>
+        <select
+          value={propertyTypeFilter}
+          onChange={(e) => {
+            setPropertyTypeFilter(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="px-3 py-2 border border-gray-300 rounded text-sm"
+        >
           <option value="All">All types</option>
           <option value="Apartment">Apartment</option>
           <option value="House">House</option>
           <option value="Studio">Studio</option>
         </select>
-        <select value={occupancyFilter} onChange={(e) => {
-          setOccupancyFilter(e.target.value);
-          setCurrentPage(1);
-        }}>
+        <select
+          value={occupancyFilter}
+          onChange={(e) => {
+            setOccupancyFilter(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="px-3 py-2 border border-gray-300 rounded text-sm"
+        >
           <option value="All">All occupancy</option>
           <option value="Occupied">Occupied</option>
           <option value="Vacant">Vacant</option>
         </select>
       </div>
 
-      <table className="property-table">
-        <thead>
-          <tr>
-            <th>Property title</th>
-            <th>Location</th>
-            <th>Property type</th>
-            <th>Rent Fee</th>
-            <th>Property status</th>
-            <th>Occupancy status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedProperties.length === 0 ? (
-            <tr><td colSpan="7" style={{ textAlign: "center" }}>No properties found.</td></tr>
-          ) : (
-            paginatedProperties.map((p, i) => (
-              <tr key={i} className="clickable-row" onClick={() => handleRowClick(p._id)}>
-                <td>
-                  <img src={p.img} alt="apt" />
-                  <span>{p.title}</span>
-                </td>
-                <td>{p.location?.address}</td>
-                <td>{p.propertyType}</td>
-                <td>{p.price}</td>
-                <td>
-                  <span className={`tag ${p.verified ? "verified" : "unverified"}`}>
-                    {p.verified ? "Verified" : "Unverified"}
-                  </span>
-                </td>
-                <td>
-                  <span className={`tag ${p.occupied ? "occupied" : "vacant"}`}>
-                    {p.occupied ? "Occupied" : "Vacant"}
-                  </span>
-                </td>
-                <td>
-                  <button onClick={(e) => { e.stopPropagation(); handleEdit(p._id); }}>✏️</button>
-                  <button onClick={(e) => { e.stopPropagation(); handleDelete(p._id); }}>🗑️</button>
+      {/* Table */}
+      <div className="overflow-x-auto bg-white rounded shadow-sm">
+        <table className="min-w-full text-sm text-left whitespace-nowrap">
+          <thead className="bg-gray-100 text-xs uppercase text-gray-500">
+            <tr>
+              <th className="px-4 py-3">Property title</th>
+              <th className="px-4 py-3">Location</th>
+              <th className="px-4 py-3">Property type</th>
+              <th className="px-4 py-3">Rent Fee</th>
+              <th className="px-4 py-3">Property status</th>
+              <th className="px-4 py-3">Occupancy status</th>
+              <th className="px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedProperties.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="text-center px-4 py-4">
+                  No properties found.
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              paginatedProperties.map((p) => (
+                <tr
+                  key={p._id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleRowClick(p._id)}
+                >
+                  <td className="px-4 py-3 flex items-center gap-2">
+                    <img
+                      src={p.img}
+                      alt="apt"
+                      className="w-10 h-10 rounded object-cover"
+                    />
+                    <span>{p.title}</span>
+                  </td>
+                  <td className="px-4 py-3">{p.location?.address}</td>
+                  <td className="px-4 py-3">{p.propertyType}</td>
+                  <td className="px-4 py-3">{p.price}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        p.verified
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-600"
+                      }`}
+                    >
+                      {p.verified ? "Verified" : "Unverified"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        p.occupied
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {p.occupied ? "Occupied" : "Vacant"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 space-x-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(p._id);
+                      }}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(p._id);
+                      }}
+                    >
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      <div className="pagination">
+      {/* Pagination */}
+      <div className="flex flex-wrap justify-between items-center mt-6 text-sm">
         <span>Show: {itemsPerPage} rows</span>
-        <div>
-          <button onClick={goToPrev} disabled={currentPage === 1}>Prev</button>
-          <span style={{ margin: "0 10px" }}>{currentPage} / {totalPages}</span>
-          <button onClick={goToNext} disabled={currentPage === totalPages}>Next</button>
+        <div className="flex items-center gap-2 mt-2 sm:mt-0">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+          <span>
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>

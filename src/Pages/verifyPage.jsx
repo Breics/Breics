@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../styles/VerifyPage.css";
 import { FaLock } from "react-icons/fa";
 import Navbar from "../components/Dashboard/DasNavbar";
 import { useNavigate } from 'react-router-dom';
@@ -57,25 +56,17 @@ const VerifyAccount = () => {
 
     const token = localStorage.getItem("token");
 
-
     try {
       const res = await axios.put(
         `https://breics-backend.onrender.com/api/landlords/profile`,
-        {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phoneNumber: formData.phone,
-          email: formData.email,
-          dateOfBirth: formData.dateOfBirth,
-          occupation: formData.occupation,
-        },
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      const { success, data } = res.data;
+      const { success } = res.data;
       if (success) {
         alert("Updated successfully");
         navigate("/verify-id");
@@ -93,106 +84,65 @@ const VerifyAccount = () => {
   return (
     <>
       <Navbar />
-      <div className="verify-container">
-        <h1>Verify Account</h1>
-        <p className="verify-subtext">
+      <div className="max-w-4xl mx-auto p-6 bg-gray-100 font-sans">
+        <h1 className="text-2xl font-bold mb-2">Verify Account</h1>
+        <p className="text-gray-500 mb-6">
           Verification involves confirming your identity. Once verified, you have access to list properties and manage tenants on Breics.
         </p>
-        <hr />
+        <hr className="mb-6" />
 
-        <section className="personal-info">
-          <h2>Personal Information</h2>
-          <p className="info-subtext">Please review and update your personal information</p>
+        <section>
+          <h2 className="text-xl font-semibold mb-2">Personal Information</h2>
+          <p className="text-gray-400 mb-4">Please review and update your personal information</p>
 
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
-          <form className="verify-form" onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Enter your first name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  required
-                />
+          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-md shadow">
+            <div className="flex flex-wrap gap-4 mb-4">
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm text-gray-700 mb-1">Enter your first name</label>
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required className="w-full p-2 border border-gray-300 rounded-md" />
               </div>
-
-              <div className="form-group">
-                <label>Enter your last name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  required
-                />
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm text-gray-700 mb-1">Enter your last name</label>
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required className="w-full p-2 border border-gray-300 rounded-md" />
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Phone number</label>
-                <div className="phone-group">
-                  <span className="country-code">+234</span>
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    required
-                  />
+            <div className="flex flex-wrap gap-4 mb-4">
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm text-gray-700 mb-1">Phone number</label>
+                <div className="flex items-center">
+                  <span className="bg-gray-100 px-3 py-2 border border-gray-300 rounded-l-md text-sm">+234</span>
+                  <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required className="w-full p-2 border border-gray-300 rounded-r-md" />
                 </div>
               </div>
-
-              <div className="form-group">
-                <label>Email address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm text-gray-700 mb-1">Email address</label>
+                <input type="email" name="email" value={formData.email} onChange={handleChange} required className="w-full p-2 border border-gray-300 rounded-md" />
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Date of birth</label>
-                <div className="dob-group">
-                  <input
-                    type="date"
-                    name="dateOfBirth"
-                    value={formData.dateOfBirth}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+            <div className="flex flex-wrap gap-4 mb-4">
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm text-gray-700 mb-1">Date of birth</label>
+                <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} required className="w-full p-2 border border-gray-300 rounded-md" />
               </div>
-
-              <div className="form-group">
-                <label>Occupation</label>
-                <input
-                  type="text"
-                  name="occupation"
-                  value={formData.occupation}
-                  placeholder="E.g. lawyer"
-                  onChange={handleChange}
-                />
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm text-gray-700 mb-1">Occupation</label>
+                <input type="text" name="occupation" value={formData.occupation} onChange={handleChange} placeholder="E.g. lawyer" className="w-full p-2 border border-gray-300 rounded-md" />
               </div>
             </div>
 
-            <button type="submit" className="verify-submit-btn" disabled={loading}>
+            <button type="submit" disabled={loading} className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">
               {loading ? "Saving..." : "Save and Continue"}
             </button>
           </form>
         </section>
 
-        <div className="id-verification">
-          <h3>ID Verification</h3>
-          <FaLock className="lock-icon" />
+        <div className="mt-8 flex items-center gap-2 text-lg text-gray-800">
+          <h3 className="font-semibold">ID Verification</h3>
+          <FaLock className="text-blue-500" />
         </div>
       </div>
     </>

@@ -14,7 +14,7 @@ import Application from "./components/Dashbooard_For_Landlord/Application";
 import MyProperties from "./components/Dashbooard_For_Landlord/Properties";
 import TenantDashboard from "./components/Dashbooard_For_Landlord/Tenants";
 import Payments from "./components/Dashbooard_For_Landlord/Payments";
-import Adminstrator from "./components/Dashbooard_For_Landlord/Adminstrator";
+// import Adminstrator from "./components/Dashbooard_For_Landlord/Adminstrator";
 import FacilityDashboard from "./components/Dashbooard_For_Landlord/Facility";
 import SupportDashboard from "./components/Dashbooard_For_Landlord/Support";
 import AccountProfile from "./components/Dashbooard_For_Landlord/Account";
@@ -45,7 +45,7 @@ function App() {
           <Route path="properties" element={<MyProperties />} />
           <Route path="tenants" element={<TenantDashboard />} />
           <Route path="payments" element={<Payments/>} />
-          <Route path="admin" element={<Adminstrator/>} />
+          {/* <Route path="admin" element={<Adminstrator/>} /> */}
           <Route path="facility" element={<FacilityDashboard/>} />
           <Route path="support" element={<SupportDashboard/>} />
           <Route path="account" element={<AccountProfile/>} />
