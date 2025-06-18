@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import '../styles/MapView.css';
+import 'leaflet/dist/leaflet.css';
 
 const customIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -16,8 +16,13 @@ const MapView = ({ properties }) => {
     : [6.5244, 3.3792]; // Default to Lagos
 
   return (
-    <div className="map-container">
-      <MapContainer center={center} zoom={12} scrollWheelZoom style={{ height: '100%', width: '100%' }}>
+    <div className="w-full h-[300px] rounded-lg overflow-hidden mb-5 relative z-[1]">
+      <MapContainer
+        center={center}
+        zoom={12}
+        scrollWheelZoom
+        className="w-full h-full"
+      >
         <TileLayer
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

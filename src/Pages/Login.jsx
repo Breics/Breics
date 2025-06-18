@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../styles/Login.css";
+import backgroundImg from "../image/heo.jpg"; // ensure correct path
 
 axios.defaults.withCredentials = true;
 
 const Login = () => {
-  const [mode, setMode] = useState("login"); // 'login' or 'register'
+  const [mode, setMode] = useState("login");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -79,18 +79,15 @@ const Login = () => {
             password: formData.password,
           }
         );
-      
         const { success, data } = res.data;
-      
+
         if (success) {
           const { token, landlord } = data;
-      
           localStorage.setItem("token", token);
           localStorage.setItem("user_id", landlord.id);
           localStorage.setItem("first_name", landlord.firstName);
-          localStorage.setItem("user", JSON.stringify(landlord)); // Save entire user object
-      
-          window.location.href = "/verify"; // or "/verify" if that's the correct route
+          localStorage.setItem("user", JSON.stringify(landlord));
+          window.location.href = "/verify";
         } else {
           setError("Login failed.");
         }
@@ -129,7 +126,7 @@ const Login = () => {
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
-          confirmPassword: formData.confirmPassword, // ✅ Important
+          confirmPassword: formData.confirmPassword,
           phoneNumber: formData.phoneNumber,
           companyDetails: {
             name:
@@ -143,13 +140,10 @@ const Login = () => {
           },
         };
 
-        console.log("Register Payload:", payload); // 🔍 Debug
-
         const res = await axios.post(
           "https://breics-backend.onrender.com/api/landlords/register",
           payload
         );
-        console.log("API Response:", res);
 
         const { success, data } = res.data;
 
@@ -157,48 +151,55 @@ const Login = () => {
           alert("Registration successful! Please log in.");
           setMode("login");
         } else {
-          console.log("Backend response not success:", res.data);
           setError(
             res.data.message || res.data.error || "Registration failed."
           );
         }
       }
     } catch (err) {
-      console.error("API Error:", err);
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("Server error. Please try again.");
-      }
+      setError(
+        err.response?.data?.message || "Server error. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <div className="tabs">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center px-4"
+      style={{ backgroundImage: `url(${backgroundImg})` }}
+    >
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <div className="flex justify-between border-b pb-3 mb-5">
           <button
-            className={isLogin ? "active" : ""}
+            className={`flex-1 py-2 text-lg ${
+              isLogin ? "border-b-2 border-orange-500 font-semibold" : ""
+            }`}
             onClick={() => handleToggle("login")}
           >
             Login
           </button>
           <button
-            className={!isLogin ? "active" : ""}
+            className={`flex-1 py-2 text-lg ${
+              !isLogin ? "border-b-2 border-orange-500 font-semibold" : ""
+            }`}
             onClick={() => handleToggle("register")}
           >
             Register
           </button>
         </div>
 
-        {error && <div className="error-box">{error}</div>}
+        {error && (
+          <div className="bg-red-100 text-red-700 px-3 py-2 mb-3 rounded text-center text-sm">
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {!isLogin && (
             <>
-              <div className="two-inputs">
+              <div className="flex flex-col md:flex-row gap-3">
                 <input
                   type="text"
                   name="firstName"
@@ -206,6 +207,7 @@ const Login = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
+                  className="flex-1 border border-gray-300 rounded px-3 py-2"
                 />
                 <input
                   type="text"
@@ -214,6 +216,7 @@ const Login = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
+                  className="flex-1 border border-gray-300 rounded px-3 py-2"
                 />
               </div>
 
@@ -224,6 +227,7 @@ const Login = () => {
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 required
+                className="border border-gray-300 rounded px-3 py-2"
               />
 
               <select
@@ -231,6 +235,7 @@ const Login = () => {
                 value={formData.account_type}
                 onChange={handleChange}
                 required
+                className="border border-gray-300 rounded px-3 py-2"
               >
                 <option value="resident">Resident</option>
                 <option value="landlord">Landlord</option>
@@ -245,6 +250,7 @@ const Login = () => {
                     value={formData.companyDetails.name}
                     onChange={handleChange}
                     required
+                    className="border border-gray-300 rounded px-3 py-2"
                   />
                   <input
                     type="text"
@@ -253,6 +259,7 @@ const Login = () => {
                     value={formData.companyDetails.registrationNumber}
                     onChange={handleChange}
                     required
+                    className="border border-gray-300 rounded px-3 py-2"
                   />
                 </>
               )}
@@ -266,6 +273,7 @@ const Login = () => {
             value={formData.email}
             onChange={handleChange}
             required
+            className="border border-gray-300 rounded px-3 py-2"
           />
 
           <input
@@ -275,6 +283,7 @@ const Login = () => {
             value={formData.password}
             onChange={handleChange}
             required
+            className="border border-gray-300 rounded px-3 py-2"
           />
 
           {!isLogin && (
@@ -286,22 +295,28 @@ const Login = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                className="border border-gray-300 rounded px-3 py-2"
               />
-              <label className="checkbox">
+              <label className="text-sm flex items-center gap-2">
                 <input
                   type="checkbox"
                   name="accept_terms"
                   checked={formData.accept_terms}
                   onChange={handleChange}
+                  className="accent-orange-500"
                 />
                 I agree to the Terms and Conditions
               </label>
             </>
           )}
 
-          <button type="submit" className="submit-btn" disabled={loading}>
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-orange-500 text-white py-2 rounded font-semibold hover:bg-orange-600 transition"
+          >
             {loading ? (
-              <div className="spinner" />
+              <div className="w-5 h-5 border-2 border-white border-t-orange-500 rounded-full animate-spin mx-auto" />
             ) : isLogin ? (
               "Login"
             ) : (
@@ -310,7 +325,10 @@ const Login = () => {
           </button>
 
           {isLogin && (
-            <a href="/reset-password" className="forgot-password">
+            <a
+              href="/forgot-password"
+              className="text-orange-500 text-sm mt-2 text-center hover:underline"
+            >
               Forgot password?
             </a>
           )}
