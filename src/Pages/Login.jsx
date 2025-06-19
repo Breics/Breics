@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
-import backgroundImg from "../image/heo.jpg"; // ensure correct path
+import { FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
+import backgroundImg from "../image/heo.jpg";
+import { useNavigate } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 
 const Login = () => {
   const [mode, setMode] = useState("login");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -22,26 +26,28 @@ const Login = () => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const isLogin = mode === "login";
 
   const handleToggle = (tab) => {
-    setMode(tab);
-    setFormData({
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      account_type: "resident",
-      accept_terms: false,
-      companyDetails: {
-        name: "",
-        registrationNumber: "",
-      },
-    });
-    setError("");
+    if (tab !== mode) {
+      setMode(tab);
+      setFormData({
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        account_type: "resident",
+        accept_terms: false,
+        companyDetails: {
+          name: "",
+          registrationNumber: "",
+        },
+      });
+      setError("");
+    }
   };
 
   const handleChange = (e) => {
@@ -145,15 +151,11 @@ const Login = () => {
           payload
         );
 
-        const { success, data } = res.data;
-
-        if (success) {
+        if (res.data.success) {
           alert("Registration successful! Please log in.");
           setMode("login");
         } else {
-          setError(
-            res.data.message || res.data.error || "Registration failed."
-          );
+          setError(res.data.message || "Registration failed.");
         }
       }
     } catch (err) {
@@ -170,19 +172,39 @@ const Login = () => {
       className="min-h-screen flex items-center justify-center bg-cover bg-center px-4"
       style={{ backgroundImage: `url(${backgroundImg})` }}
     >
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+      <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg w-full max-w-md relative transition-all duration-300 ease-in-out">
+        {/* Exit Button */}
+        <button
+          onClick={() => navigate("/")}
+          className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
+        >
+          <FaTimes />
+        </button>
+
+        {/* Dynamic Heading */}
+        <h2 className="text-center font-semibold text-gray-800 mb-4 text-lg">
+          {isLogin
+            ? "Login to Breics – List your properties"
+            : "Register on Breics – You are a step away to list your home"}
+        </h2>
+
+        {/* Toggle Tabs */}
         <div className="flex justify-between border-b pb-3 mb-5">
           <button
-            className={`flex-1 py-2 text-lg ${
-              isLogin ? "border-b-2 border-orange-500 font-semibold" : ""
+            className={`flex-1 py-2 text-center transition-all duration-200 ${
+              isLogin
+                ? "border-b-2 border-orange-500 text-orange-600 font-bold"
+                : "text-gray-500"
             }`}
             onClick={() => handleToggle("login")}
           >
             Login
           </button>
           <button
-            className={`flex-1 py-2 text-lg ${
-              !isLogin ? "border-b-2 border-orange-500 font-semibold" : ""
+            className={`flex-1 py-2 text-center transition-all duration-200 ${
+              !isLogin
+                ? "border-b-2 border-orange-500 text-orange-600 font-bold"
+                : "text-gray-500"
             }`}
             onClick={() => handleToggle("register")}
           >
@@ -206,7 +228,6 @@ const Login = () => {
                   placeholder="First Name"
                   value={formData.firstName}
                   onChange={handleChange}
-                  required
                   className="flex-1 border border-gray-300 rounded px-3 py-2"
                 />
                 <input
@@ -215,7 +236,6 @@ const Login = () => {
                   placeholder="Last Name"
                   value={formData.lastName}
                   onChange={handleChange}
-                  required
                   className="flex-1 border border-gray-300 rounded px-3 py-2"
                 />
               </div>
@@ -226,7 +246,6 @@ const Login = () => {
                 placeholder="Phone Number"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                required
                 className="border border-gray-300 rounded px-3 py-2"
               />
 
@@ -234,7 +253,6 @@ const Login = () => {
                 name="account_type"
                 value={formData.account_type}
                 onChange={handleChange}
-                required
                 className="border border-gray-300 rounded px-3 py-2"
               >
                 <option value="resident">Resident</option>
@@ -249,7 +267,6 @@ const Login = () => {
                     placeholder="Company Name"
                     value={formData.companyDetails.name}
                     onChange={handleChange}
-                    required
                     className="border border-gray-300 rounded px-3 py-2"
                   />
                   <input
@@ -258,7 +275,6 @@ const Login = () => {
                     placeholder="Registration Number"
                     value={formData.companyDetails.registrationNumber}
                     onChange={handleChange}
-                    required
                     className="border border-gray-300 rounded px-3 py-2"
                   />
                 </>
@@ -276,31 +292,50 @@ const Login = () => {
             className="border border-gray-300 rounded px-3 py-2"
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="border border-gray-300 rounded px-3 py-2"
-          />
-          
+          {/* Password field with icon */}
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded px-3 py-2 w-full"
+            />
+            <span
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
 
+          {/* Confirm Password for register only */}
           {!isLogin && (
             <>
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                className="border border-gray-300 rounded px-3 py-2"
-              />
-               <p className="text-xs text-gray-500 mt-1">
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                />
+                <span
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+
+              <p className="text-xs text-gray-500 mt-1">
                 Password must contain at least 8 characters, including uppercase, lowercase, number, and special character (!@#$%^&*).
               </p>
+
               <label className="text-sm flex items-center gap-2">
                 <input
                   type="checkbox"
