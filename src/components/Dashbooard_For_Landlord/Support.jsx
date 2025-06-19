@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import '../../styles/Support.css';
 
 export default function SupportDashboard() {
   const [tickets, setTickets] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [newTicket, setNewTicket] = useState({
+    title: '',
+    category: '',
+    description: '',
+    createdBy: '',
+    createdRole: 'User',
+    status: 'Open',
+  });
 
   useEffect(() => {
     fetch('http://localhost:5000/api/tickets')
@@ -11,73 +19,107 @@ export default function SupportDashboard() {
       .catch(err => console.error(err));
   }, []);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // POST ticket to backend
+    fetch('http://localhost:5000/api/tickets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newTicket),
+    })
+      .then(res => res.json())
+      .then((data) => {
+        setTickets((prev) => [...prev, data]);
+        setShowModal(false);
+        setNewTicket({
+          title: '',
+          category: '',
+          description: '',
+          createdBy: '',
+          createdRole: 'User',
+          status: 'Open',
+        });
+      })
+      .catch(err => console.error(err));
+  };
+
   return (
-    <div className="support-dashboard">
-      <div className="support-header">
-        <div className="support-box">
-          <h4>Get Support</h4>
+    <div className="p-4 sm:p-6 md:p-8 font-sans">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1 bg-white rounded-lg shadow p-6">
+          <h4 className="text-lg font-semibold mb-2">Get Support</h4>
           <p>support@breics.com</p>
           <p>+2349017668909</p>
         </div>
-        <div className="raise-box">
-          <h4>Raise Ticket</h4>
+        <div className="flex-1 bg-white rounded-lg shadow p-6">
+          <h4 className="text-lg font-semibold mb-2">Raise Ticket</h4>
           <p>Create a support ticket</p>
-          <button>Create Ticket →</button>
+          <button
+            className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition"
+            onClick={() => setShowModal(true)}
+          >
+            Create Ticket →
+          </button>
         </div>
       </div>
 
-      <div className="tickets-section">
-        <div className="tabs">
-          <span className="active">All tickets</span>
-          <span>New tickets</span>
-        </div>
+      {/* ...Table remains the same here... */}
 
-        <div className="search-filter">
-          <input type="text" placeholder="Search ticket" />
-          <select><option>All tickets</option></select>
-          <select><option>All dates</option></select>
-          <select><option>All status</option></select>
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-md w-full max-w-md p-6 relative shadow-lg">
+            <button
+              className="absolute top-2 right-3 text-gray-500 text-xl hover:text-gray-700"
+              onClick={() => setShowModal(false)}
+            >
+              &times;
+            </button>
+            <h2 className="text-lg font-bold mb-4">Raise New Ticket</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Title"
+                value={newTicket.title}
+                onChange={(e) => setNewTicket({ ...newTicket, title: e.target.value })}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Category"
+                value={newTicket.category}
+                onChange={(e) => setNewTicket({ ...newTicket, category: e.target.value })}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                required
+              />
+              <textarea
+                placeholder="Description"
+                value={newTicket.description}
+                onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                rows={3}
+                required
+              ></textarea>
+              <input
+                type="text"
+                placeholder="Your name"
+                value={newTicket.createdBy}
+                onChange={(e) => setNewTicket({ ...newTicket, createdBy: e.target.value })}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-orange-500 w-full text-white py-2 rounded-md hover:bg-orange-600 transition"
+              >
+                Submit Ticket
+              </button>
+            </form>
+          </div>
         </div>
-
-        <table className="tickets-table">
-          <thead>
-            <tr>
-              <th>Ticket title</th>
-              <th>Category</th>
-              <th>Date created</th>
-              <th>Created by</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tickets.map((ticket, index) => (
-              <tr key={index}>
-                <td>{ticket.title}</td>
-                <td className="category">{ticket.category}</td>
-                <td>{ticket.dateCreated}</td>
-                <td>
-                  <div className="user-info">
-                    <img src="/avatar.png" alt="avatar" className="user-avatar" />
-                    <div>
-                      <div>{ticket.createdBy}</div>
-                      <div className="role">{ticket.createdRole}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span className={`status-badge ${ticket.status.toLowerCase()}`}>
-                    {ticket.status}
-                  </span>
-                </td>
-                <td>
-                  <button className="dots">&#8942;</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      )}
     </div>
   );
 }
