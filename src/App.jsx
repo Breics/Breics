@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Landingpage from "./Pages/LandingPage";
 import PropertyListing from "./Pages/PropertyListing";
 import LandLordPage from "./Pages/LandLordPage";
@@ -28,11 +30,14 @@ import LoginPage from "./components/Tenant/Auth/login";
 import VerifyEmailPage from "./components/Tenant/Auth/verifyEmail";
 import TenantDashboard from "./components/Tenant/Dashboard/TenantDashboard";
 import CompleteProfile from "./components/Tenant/Profile/CompleteProfile";
+import TenantProfilePage from "./components/Tenant/Pages/TenantProfile";
+import TenantLayout from "./components/Tenant/Layout/TenantLayout";
 
 function App() {
   return (
     <TenantReduxProvider>
       <Router>
+        <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
         <Routes>
         <Route path="/" element={<Landingpage />} />
         <Route path="/find-property" element={<PropertyListing />} />
@@ -42,7 +47,10 @@ function App() {
         <Route path="/tenant/login" element={<LoginPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/tenant/complete-profile" element={<CompleteProfile />} />
-        <Route path="/tenant/dashboard" element={<TenantDashboard />} />
+        <Route path="/tenant" element={<TenantLayout />}>
+          <Route path="dashboard" element={<TenantDashboard />} />
+          <Route path="profile" element={<TenantProfilePage />} />
+        </Route>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify" element={<Dashboard />} />

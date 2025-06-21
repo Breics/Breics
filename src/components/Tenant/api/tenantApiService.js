@@ -289,23 +289,3 @@ export const tenantSupportService = {
     );
   }
 };
-
-// Google OAuth Services
-export const tenantGoogleAuthService = {
-  // Initiate Google OAuth login
-  googleLogin: () => {
-    window.location.href = buildApiUrl(TENANT_ENDPOINTS.GOOGLE_LOGIN);
-    return Promise.resolve();
-  },
-  
-  // Link Google account to existing tenant account
-  linkGoogleAccount: () => {
-    window.location.href = buildApiUrl(TENANT_ENDPOINTS.GOOGLE_LINK);
-    return Promise.resolve();
-  },
-  
-  // Unlink Google account from tenant account
-  unlinkGoogleAccount: () => {
-    return tenantApiClient.post(TENANT_ENDPOINTS.GOOGLE_UNLINK);
-  }
-};

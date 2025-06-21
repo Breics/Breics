@@ -54,11 +54,7 @@ export const TENANT_ENDPOINTS = {
   GET_SUPPORT_TICKET: '/tenants/support/:id',
   UPDATE_SUPPORT_TICKET: '/tenants/support/:id',
   
-  // Google OAuth (based on memory of implemented Google OAuth)
-  GOOGLE_LOGIN: '/tenants/auth/google',
-  GOOGLE_CALLBACK: '/tenants/auth/google/callback',
-  GOOGLE_LINK: '/tenants/auth/google/link',
-  GOOGLE_UNLINK: '/tenants/auth/google/unlink'
+  // Google OAuth endpoints removed
 };
 
 // Helper function to replace URL parameters
