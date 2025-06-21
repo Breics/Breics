@@ -21,7 +21,7 @@ const navItems = [
   { label: "My Tenants", icon: <FiUsers />, path: "/dashboard/tenants" },
   { label: "Payments", icon: <FiCreditCard />, path: "/dashboard/payments" },
   { label: "Facility", icon: <FiServer />, path: "/dashboard/facility" },
-  { label: "Administration", icon: <FiUserCheck />, path: "/dashboard/admin" },
+  // { label: "Administration", icon: <FiUserCheck />, path: "/dashboard/admin" },
   { label: "Support", icon: <FiSettings />, path: "/dashboard/support" },
   { label: "Account", icon: <FiUser />, path: "/dashboard/account" }
 ];
