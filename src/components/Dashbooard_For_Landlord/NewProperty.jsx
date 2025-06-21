@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 const SubmitNewProperty = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(
+    {
     title: "",
     description: "",
     propertyType: "",
@@ -30,7 +31,8 @@ const SubmitNewProperty = () => {
     availableTo: "",
     rules: [],
     agreement: false,
-  });
+  }
+);
 
   const [feature, setFeature] = useState({
     name: "",
