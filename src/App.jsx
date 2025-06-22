@@ -28,6 +28,8 @@ import LoginPage from "./components/Tenant/Auth/login";
 import VerifyEmailPage from "./components/Tenant/Auth/verifyEmail";
 import TenantDashboard from "./components/Tenant/Dashboard/TenantDashboard";
 import CompleteProfile from "./components/Tenant/Profile/CompleteProfile";
+import AdminLayout from "./components/Admin/Pages/DashBoard";
+import AdminBoard from "./components/Admin/Components/AdminIndex";
 
 function App() {
   return (
@@ -65,6 +67,13 @@ function App() {
           <Route path="new-property" element={<SubmitNewProperty/>} />
           <Route path="property-details/:id" element={<PropertyDetails />} />
           <Route path="tenants-profile/:tenantId" element={<TenantProfile />} />
+
+
+        </Route>
+         <Route path="/admin-dashboard" element={<AdminLayout />}>
+          <Route index element={<AdminBoard />} />
+          <Route path="admin-index" element={<AdminBoard />} />
+          
 
 
         </Route>
