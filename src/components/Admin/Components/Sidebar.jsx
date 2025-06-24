@@ -17,8 +17,8 @@ import {
 
 const navItems = [
   { label: "Dashboard", icon: <FiGrid />, path: "/admin-dashboard/admin-index" },
-  { label: "Mailbox", icon: <FiMail />, path: "/dashboard/mailbox" },
-  { label: "Application", icon: <FiFileText />, path: "/dashboard/application" },
+  { label: "Mailbox", icon: <FiMail />, path: "/admin-dashboard/mail-box" },
+  { label: "Application", icon: <FiFileText />, path: "/admin-dashboard/application" },
   { label: "Properties", icon: <FiHome />, path: "/dashboard/properties" },
   { label: "Landlords", icon: <FiUserCheck />, path: "/dashboard/landlords" },
   { label: "Tenants", icon: <FiUsers />, path: "/dashboard/tenants" },

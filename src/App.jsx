@@ -30,6 +30,9 @@ import TenantDashboard from "./components/Tenant/Dashboard/TenantDashboard";
 import CompleteProfile from "./components/Tenant/Profile/CompleteProfile";
 import AdminLayout from "./components/Admin/Pages/DashBoard";
 import AdminBoard from "./components/Admin/Components/AdminIndex";
+import Mailbox from "./components/Admin/Components/MailBox";
+import PropApplications from "./components/Admin/Components/PropertyApplications";
+import PropInspections from "./components/Admin/Components/PropertyInspections";
 
 function App() {
   return (
@@ -73,6 +76,9 @@ function App() {
          <Route path="/admin-dashboard" element={<AdminLayout />}>
           <Route index element={<AdminBoard />} />
           <Route path="admin-index" element={<AdminBoard />} />
+          <Route path="mail-box" element={<Mailbox />} />
+          <Route path="application" element={<PropApplications />} />
+          <Route path="inspections" element={<PropInspections />} />
           
 
 
