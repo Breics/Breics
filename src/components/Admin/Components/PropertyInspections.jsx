@@ -1,72 +1,41 @@
-// Applications.jsx
-import React, { useEffect, useState } from "react";
-import { FiSearch } from "react-icons/fi";
-import axios from "axios";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import React, { useEffect, useState } from 'react';
 
 export default function PropInspections() {
-  const [activeTab, setActiveTab] = useState("reservations");
-  const [applications, setApplications] = useState([]);
-  const [filters, setFilters] = useState({
-    status: "",
-    type: "reservations",
-    search: "",
-    date: null,
-  });
-  const [selectedApp, setSelectedApp] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [inspections, setInspections] = useState([]);
+  const [selected, setSelected] = useState(null);
 
-  const fetchApplications = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("https://breics-backend.onrender.com/api/applications", {
-        params: {
-          ...filters,
-          date: filters.date ? filters.date.toISOString().split("T")[0] : "",
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setApplications(res.data);
-    } catch (err) {
-      console.error("Fetch error:", err);
-    }
+  const fetchInspections = () => {
+    fetch('http://localhost:5000/api/inspections')
+      .then(res => res.json())
+      .then(data => setInspections(data));
   };
 
   useEffect(() => {
-    fetchApplications();
-  }, [filters]);
+    fetchInspections();
+  }, []);
 
   const handleAction = async (id, action) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `https://breics-backend.onrender.com/api/applications/${id}/${action}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      fetchApplications();
-    } catch (err) {
-      console.error("Action error:", err);
-    }
+    await fetch(`http://localhost:5000/api/inspections/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: action }),
+    });
+    fetchInspections();
   };
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-screen">
-      <div className="flex flex-wrap justify-between items-center">
-        <h1 className="text-xl font-semibold text-gray-800">Applications</h1>
-        <button className="bg-orange-500 text-white px-4 py-2 rounded">Schedule appointment</button>
+    <div className="max-w-[1400px] mx-auto p-4 sm:p-6 md:p-8 bg-gray-100 font-sans">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <h2 className="text-xl font-semibold">Applications</h2>
+        <button className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-600 transition">
+          Add application
+        </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-6 text-sm border-b">
-       <a href="/admin-dashboard/application" className="text-sm py-2 border-b-2 border-transparent hover:border-orange-500">
+      <div className="flex flex-wrap gap-4 border-b border-gray-300 mb-4 w-full md:w-4/5">
+        <a href="/admin-dashboard/application" className="text-sm py-2 border-b-2 border-transparent hover:border-orange-500">
           Reservations
         </a>
         <button className="text-sm py-2 border-b-2 border-orange-500 text-orange-500 font-medium">
@@ -74,74 +43,86 @@ export default function PropInspections() {
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 items-center justify-between">
-        <div className="flex items-center border rounded px-3 py-2 bg-white w-full sm:w-1/2 md:w-1/3">
-          <input
-            type="text"
-            placeholder="Search reservation"
-            className="outline-none w-full text-sm"
-            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          />
-          <FiSearch className="text-gray-400 ml-2" />
-        </div>
-        <select onChange={(e) => setFilters({ ...filters, status: e.target.value })} className="border px-3 py-2 rounded">
-          <option value="">All status</option>
-          <option value="Accepted">Accepted</option>
-          <option value="Rejected">Rejected</option>
-        </select>
-        <DatePicker
-          selected={filters.date}
-          onChange={(date) => setFilters({ ...filters, date })}
-          placeholderText="All dates"
-          className="border px-3 py-2 rounded w-[160px]"
+      {/* Filter Bar */}
+      <div className="flex flex-wrap gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search inspections"
+          className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-md text-sm"
         />
+        <select className="px-3 py-2 border border-gray-300 rounded-md text-sm">
+          <option>All reservations</option>
+        </select>
+        <select className="px-3 py-2 border border-gray-300 rounded-md text-sm">
+          <option>All dates</option>
+        </select>
+        <select className="px-3 py-2 border border-gray-300 rounded-md text-sm">
+          <option>All status</option>
+        </select>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white rounded shadow mt-4">
-        <table className="w-full text-sm text-gray-700">
-          <thead className="bg-orange-50">
+      <div className="overflow-x-auto">
+        <table className="w-full bg-white rounded-md shadow-sm">
+          <thead className="text-sm bg-gray-50">
             <tr>
-              <th className="p-3">Date</th>
-              <th className="p-3">Name</th>
-              <th className="p-3">Email</th>
-              <th className="p-3">Phone</th>
-              <th className="p-3">Address</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Actions</th>
+              <th className="p-3 text-left">Name</th>
+              <th className="p-3 text-left">Property address</th>
+              <th className="p-3 text-left">Inspection date</th>
+              <th className="p-3 text-left">Inspection time</th>
+              <th className="p-3 text-left">Reservation status</th>
+              <th className="p-3 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {applications.map((app) => (
-              <tr key={app._id} className="border-t hover:bg-gray-50">
-                <td className="p-3">{app.date}</td>
-                <td className="p-3 cursor-pointer text-orange-500" onClick={() => { setSelectedApp(app); setModalOpen(true); }}>{app.name}</td>
-                <td className="p-3">{app.email}</td>
-                <td className="p-3">{app.phone}</td>
-                <td className="p-3">{app.address}</td>
-                <td className="p-3">
+            {inspections.map((insp) => (
+              <tr key={insp._id} className="border-t">
+                <td className="p-3 flex items-center gap-2">
+                  <img
+                    src={insp.avatar}
+                    alt="avatar"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover"
+                  />
+                  <span className="text-sm">{insp.name}</span>
+                </td>
+                <td className="p-3 text-sm">{insp.address}</td>
+                <td className="p-3 text-sm">{insp.date}</td>
+                <td className="p-3 text-sm">{insp.time}</td>
+                <td className="p-3 text-sm">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      app.status === "Accepted" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+                    className={`px-3 py-1 rounded-full text-xs capitalize ${
+                      insp.status === 'Accepted'
+                        ? 'bg-green-100 text-green-700'
+                        : insp.status === 'Rejected'
+                        ? 'bg-red-100 text-red-600'
+                        : 'bg-gray-100 text-gray-700'
                     }`}
                   >
-                    {app.status}
+                    {insp.status}
                   </span>
                 </td>
-                <td className="p-3 space-x-2">
-                  <button
-                    onClick={() => handleAction(app._id, "accept")}
-                    className="text-green-500 hover:underline text-xs"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleAction(app._id, "reject")}
-                    className="text-red-500 hover:underline text-xs"
-                  >
-                    Reject
-                  </button>
+                <td className="p-3 text-sm relative group">
+                  <button className="text-xl">•••</button>
+                  <div className="hidden group-hover:flex absolute z-10 right-0 top-full mt-2 bg-white shadow-md rounded-md flex-col min-w-[160px] border">
+                    <button
+                      className="text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                      onClick={() => setSelected(insp)}
+                    >
+                      View booking
+                    </button>
+                    <button
+                      className="text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                      onClick={() => handleAction(insp._id, 'Accepted')}
+                    >
+                      Accept booking
+                    </button>
+                    <button
+                      className="text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                      onClick={() => handleAction(insp._id, 'Rejected')}
+                    >
+                      Reject booking
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -150,23 +131,36 @@ export default function PropInspections() {
       </div>
 
       {/* Modal */}
-      {modalOpen && selectedApp && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-lg p-6 relative shadow-xl">
-            <h2 className="text-lg font-semibold mb-4">Application Details</h2>
-            <div className="text-sm space-y-2">
-              <p><strong>Name:</strong> {selectedApp.name}</p>
-              <p><strong>Email:</strong> {selectedApp.email}</p>
-              <p><strong>Phone:</strong> {selectedApp.phone}</p>
-              <p><strong>Address:</strong> {selectedApp.address}</p>
-              <p><strong>Status:</strong> {selectedApp.status}</p>
-              <p><strong>Date:</strong> {selectedApp.date}</p>
-            </div>
+      {selected && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold mb-3">Booking Details</h3>
+            <p className="text-sm mb-1">
+              <strong>Name:</strong> {selected.name}
+            </p>
+            <p className="text-sm mb-1">
+              <strong>Address:</strong> {selected.address}
+            </p>
+            <p className="text-sm mb-1">
+              <strong>Date:</strong> {selected.date}
+            </p>
+            <p className="text-sm mb-1">
+              <strong>Time:</strong> {selected.time}
+            </p>
+            <p className="text-sm mb-3">
+              <strong>Status:</strong> {selected.status}
+            </p>
             <button
-              onClick={() => setModalOpen(false)}
-              className="absolute top-2 right-3 text-gray-500 hover:text-gray-700 text-lg"
+              className="bg-orange-500 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-600"
+              onClick={() => setSelected(null)}
             >
-              &times;
+              Close
             </button>
           </div>
         </div>
