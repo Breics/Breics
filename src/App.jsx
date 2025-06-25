@@ -33,6 +33,9 @@ import AdminBoard from "./components/Admin/Components/AdminIndex";
 import Mailbox from "./components/Admin/Components/MailBox";
 import PropApplications from "./components/Admin/Components/PropertyApplications";
 import PropInspections from "./components/Admin/Components/PropertyInspections";
+import AllProperties from "./components/Admin/Components/AllProperty";
+import AllLandlords from "./components/Admin/Components/AllLandlords";
+import LandlordProfile from "./components/Admin/Components/LanlordProfile";
 
 function App() {
   return (
@@ -79,6 +82,9 @@ function App() {
           <Route path="mail-box" element={<Mailbox />} />
           <Route path="application" element={<PropApplications />} />
           <Route path="inspections" element={<PropInspections />} />
+          <Route path="allproperties" element={<AllProperties />} />
+          <Route path="alllanlords" element={<AllLandlords />} />
+          <Route path="landlords/:id" element={<LandlordProfile />} />
           
 
 

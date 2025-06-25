@@ -19,14 +19,14 @@ const navItems = [
   { label: "Dashboard", icon: <FiGrid />, path: "/admin-dashboard/admin-index" },
   { label: "Mailbox", icon: <FiMail />, path: "/admin-dashboard/mail-box" },
   { label: "Application", icon: <FiFileText />, path: "/admin-dashboard/application" },
-  { label: "Properties", icon: <FiHome />, path: "/dashboard/properties" },
-  { label: "Landlords", icon: <FiUserCheck />, path: "/dashboard/landlords" },
-  { label: "Tenants", icon: <FiUsers />, path: "/dashboard/tenants" },
-  { label: "Agents", icon: <FiUserCheck />, path: "/dashboard/agents" },
-  { label: "Transactions", icon: <FiCreditCard />, path: "/dashboard/transactions" },
-  { label: "Facility", icon: <FiServer />, path: "/dashboard/facility" },
-  { label: "File manager", icon: <FiFileText />, path: "/dashboard/file-manager" },
-  { label: "Account", icon: <FiUser />, path: "/dashboard/account" },
+  { label: "Properties", icon: <FiHome />, path: "/admin-dashboard/allproperties" },
+  { label: "Landlords", icon: <FiUserCheck />, path: "/admin-dashboard/alllanlords" },
+  { label: "Tenants", icon: <FiUsers />, path: "/admin-dashboard/tenants" },
+  { label: "Agents", icon: <FiUserCheck />, path: "/admin-dashboard/agents" },
+  { label: "Transactions", icon: <FiCreditCard />, path: "/admin-dashboard/transactions" },
+  { label: "Facility", icon: <FiServer />, path: "/admin-dashboard/facility" },
+  { label: "File manager", icon: <FiFileText />, path: "/admin-dashboard/file-manager" },
+  { label: "Account", icon: <FiUser />, path: "/admin-dashboard/account" },
 ];
 
 const AdminSidebar = () => {
