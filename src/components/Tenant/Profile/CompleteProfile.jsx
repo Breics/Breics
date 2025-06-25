@@ -14,14 +14,23 @@ const CompleteProfile = () => {
   
   // Check if user is logged in, email is verified, and profile status
   useEffect(() => {
+    console.log('CompleteProfile - Current user state:', user);
+    
     if (!user) {
+      console.log('No user found, redirecting to login');
       navigate('/tenant/login');
     } else if (!user.isEmailVerified) {
+      console.log('Email not verified, redirecting to verification page');
       navigate('/verify-email');
     } else if (user.profileStatus && 
               ['PendingAdminReview', 'Verified', 'Rejected', 'ProfileUpdateRequired'].includes(user.profileStatus)) {
       // If profile is already completed (any status beyond EmailVerified), redirect to dashboard
+      console.log(`Profile already in status ${user.profileStatus}, redirecting to dashboard`);
       navigate('/tenant/dashboard');
+    } else if (user.profileStatus === 'EmailVerified') {
+      console.log('Email verified, ready for profile completion');
+    } else {
+      console.log(`Unknown profile status: ${user.profileStatus}, proceeding with profile completion`);
     }
   }, [user, navigate]);
   
@@ -139,33 +148,59 @@ const CompleteProfile = () => {
       // Create FormData object for file uploads
       const profileFormData = new FormData();
       
-      // Add all text fields
+      // Add basic fields (excluding special handling fields)
+      const specialFields = ['documents', 'idType', 'idNumber', 'school', 'faculty', 'course', 'academicLevel', 
+                           'matriculationNumber', 'nextOfKinName', 'nextOfKinRelationship', 'nextOfKinPhone', 'nextOfKinAddress'];
+      
       Object.keys(formData).forEach(key => {
-        if (key !== 'documents') {
+        if (!specialFields.includes(key) && key !== 'documents') {
           profileFormData.append(key, formData[key]);
+          console.log(`Adding form field: ${key} = ${formData[key]}`);
         }
       });
       
+      // Add government ID fields properly nested
+      profileFormData.append('governmentId[idType]', formData.idType || '');
+      profileFormData.append('governmentId[idNumber]', formData.idNumber || '');
+      console.log(`Adding government ID type: ${formData.idType}`);
+      console.log(`Adding government ID number: ${formData.idNumber}`);
+      
+      // Add nested objects for educational info
+      profileFormData.append('educationalInfo[schoolName]', formData.school || '');
+      profileFormData.append('educationalInfo[faculty]', formData.faculty || '');
+      profileFormData.append('educationalInfo[courseOfStudy]', formData.course || '');
+      profileFormData.append('educationalInfo[academicLevel]', formData.academicLevel || '');
+      profileFormData.append('educationalInfo[matriculationNumber]', formData.matriculationNumber || '');
+      
+      // Add nested objects for next of kin
+      profileFormData.append('nextOfKin[firstName]', formData.nextOfKinName || '');
+      profileFormData.append('nextOfKin[relationship]', formData.nextOfKinRelationship || '');
+      profileFormData.append('nextOfKin[phoneNumber]', formData.nextOfKinPhone || '');
+      profileFormData.append('nextOfKin[address]', formData.nextOfKinAddress || '');
+      
       // Add document files
       if (formData.documents) {
-        // Map document fields to their expected backend field names
-        const documentFieldMap = {
-          governmentId: 'governmentId',
-          schoolId: 'schoolId',
-          clearanceDocument: 'clearanceDocument'
-        };
+        // Handle document uploads with proper field mapping
+        if (formData.documents.governmentId) {
+          profileFormData.append('governmentId[idDocument]', formData.documents.governmentId);
+          console.log(`Appending government ID document: ${formData.documents.governmentId.name}`);
+        }
         
-        Object.keys(formData.documents).forEach(docKey => {
-          if (formData.documents[docKey]) {
-            const backendFieldName = documentFieldMap[docKey] || docKey;
-            profileFormData.append(backendFieldName, formData.documents[docKey]);
-            console.log(`Appending file for field: ${backendFieldName}`);
-          }
-        });
+        if (formData.documents.schoolId) {
+          profileFormData.append('schoolId', formData.documents.schoolId);
+          console.log(`Appending school ID document: ${formData.documents.schoolId.name}`);
+        }
+        
+        if (formData.documents.clearanceDocument) {
+          // For clearance documents, we need to append to an array
+          profileFormData.append('clearanceDocuments', formData.documents.clearanceDocument);
+          console.log(`Appending clearance document: ${formData.documents.clearanceDocument.name}`);
+        }
       }
       
       // Set profileStatus explicitly
       profileFormData.append('profileStatus', 'PendingAdminReview');
+      profileFormData.append('tenantAffairsVerificationNumber', formData.studentAffairsVerificationNumber || '');
       
       console.log('Submitting profile completion form with fields:', 
         Array.from(profileFormData.entries()).map(([key]) => key));
@@ -260,10 +295,12 @@ const CompleteProfile = () => {
                 className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 required
               >
-                <option value="National ID">National ID</option>
+                <option value="">Select ID Type</option>
+                <option value="NationalID">National ID</option>
                 <option value="Passport">Passport</option>
-                <option value="Driver's License">Driver's License</option>
-                <option value="Voter's Card">Voter's Card</option>
+                <option value="DriversLicense">Driver's License</option>
+                <option value="StudentIDCard">Student ID Card</option>
+                <option value="Other">Other</option>
               </select>
             </div>
             

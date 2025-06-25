@@ -106,9 +106,12 @@ export const verifyEmail = createAsyncThunk(
   'tenantAuth/verifyEmail',
   async (token, thunkAPI) => {
     try {
+      console.log('Verifying email with token:', token);
       const response = await tenantAuthService.verifyEmail(token);
-      return response.data.data;
+      console.log('Email verification response:', response.data);
+      return response.data;
     } catch (error) {
+      console.error('Email verification error:', error.response?.data || error.message);
       const message = error.response?.data?.message || 'Email verification failed';
       return thunkAPI.rejectWithValue(message);
     }
@@ -138,6 +141,10 @@ export const tenantAuthSlice = createSlice({
       state.isSuccess = false;
       state.isError = false;
       state.message = '';
+    },
+    updateUser: (state, action) => {
+      state.user = action.payload;
+      localStorage.setItem('user', JSON.stringify(action.payload));
     },
   },
   extraReducers: (builder) => {
@@ -188,8 +195,12 @@ export const tenantAuthSlice = createSlice({
       .addCase(verifyEmail.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
+        console.log('Email verification successful, updating user state');
+        
         if (state.user) {
           state.user.isEmailVerified = true;
+          state.user.profileStatus = 'EmailVerified';
+          console.log('Updated user state:', state.user);
           localStorage.setItem('user', JSON.stringify(state.user));
         }
       })
@@ -214,5 +225,5 @@ export const tenantAuthSlice = createSlice({
   },
 });
 
-export const { reset } = tenantAuthSlice.actions;
+export const { reset, updateUser } = tenantAuthSlice.actions;
 export default tenantAuthSlice.reducer;

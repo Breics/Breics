@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Landingpage from "./Pages/LandingPage";
 import PropertyListing from "./Pages/PropertyListing";
 import LandLordPage from "./Pages/LandLordPage";
@@ -28,6 +30,11 @@ import LoginPage from "./components/Tenant/Auth/login";
 import VerifyEmailPage from "./components/Tenant/Auth/verifyEmail";
 import TenantDashboard from "./components/Tenant/Dashboard/TenantDashboard";
 import CompleteProfile from "./components/Tenant/Profile/CompleteProfile";
+import TenantProfilePage from "./components/Tenant/Pages/TenantProfile";
+import TenantSettings from "./components/Tenant/Pages/TenantSettings";
+import TenantLayout from "./components/Tenant/Layout/TenantLayout";
+import TenantFacility from "./components/Tenant/Pages/TenantFacility";
+import TenantEscalate from "./components/Tenant/Pages/TenantEscalate";
 import AdminLayout from "./components/Admin/Pages/DashBoard";
 import AdminBoard from "./components/Admin/Components/AdminIndex";
 import Mailbox from "./components/Admin/Components/MailBox";
@@ -44,6 +51,7 @@ function App() {
   return (
     <TenantReduxProvider>
       <Router>
+        <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
         <Routes>
         <Route path="/" element={<Landingpage />} />
         <Route path="/find-property" element={<PropertyListing />} />
@@ -53,7 +61,13 @@ function App() {
         <Route path="/tenant/login" element={<LoginPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/tenant/complete-profile" element={<CompleteProfile />} />
-        <Route path="/tenant/dashboard" element={<TenantDashboard />} />
+        <Route path="/tenant" element={<TenantLayout />}>
+          <Route path="dashboard" element={<TenantDashboard />} />
+          <Route path="profile" element={<TenantProfilePage />} />
+          <Route path="settings" element={<TenantSettings />} />
+          <Route path="facility" element={<TenantFacility />} />
+          <Route path="escalate" element={<TenantEscalate />} />
+        </Route>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify" element={<Dashboard />} />
@@ -76,6 +90,7 @@ function App() {
           <Route path="new-property" element={<SubmitNewProperty/>} />
           <Route path="property-details/:id" element={<PropertyDetails />} />
           <Route path="tenants-profile/:tenantId" element={<TenantProfile />} />
+          <Route path="settings" element={<TenantSettings />} />
 
 
         </Route>

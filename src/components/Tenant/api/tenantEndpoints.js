@@ -1,6 +1,6 @@
 // Base API URL configuration
 export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://breicsapi.onrender.com/api'
+  ? 'https://breics-backend.onrender.com/api'
   : 'http://localhost:5000/api';
 
 // For debugging - log the base URL being used
@@ -49,16 +49,20 @@ export const TENANT_ENDPOINTS = {
   GET_PAYMENT_DETAILS: '/tenants/payments/:id',
   
   // Support
+  
+  // Tickets
+  GET_TICKETS: '/tickets',
+  CREATE_TICKET: '/tickets',
+  GET_TICKET: '/tickets/:id',
+  UPDATE_TICKET: '/tickets/:id',
+  ADD_COMMENT: '/tickets/:id/comments',
+  GET_TICKET_STATS: '/tickets/stats',
   CREATE_SUPPORT_TICKET: '/tenants/support',
   GET_SUPPORT_TICKETS: '/tenants/support',
   GET_SUPPORT_TICKET: '/tenants/support/:id',
   UPDATE_SUPPORT_TICKET: '/tenants/support/:id',
   
-  // Google OAuth (based on memory of implemented Google OAuth)
-  GOOGLE_LOGIN: '/tenants/auth/google',
-  GOOGLE_CALLBACK: '/tenants/auth/google/callback',
-  GOOGLE_LINK: '/tenants/auth/google/link',
-  GOOGLE_UNLINK: '/tenants/auth/google/unlink'
+  // Google OAuth endpoints removed
 };
 
 // Helper function to replace URL parameters

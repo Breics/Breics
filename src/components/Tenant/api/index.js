@@ -13,8 +13,7 @@ import {
   tenantApplicationService,
   tenantPropertyService,
   tenantPaymentService,
-  tenantSupportService,
-  tenantGoogleAuthService
+  tenantSupportService
 } from './tenantApiService';
 
 // Import enhanced profile service
@@ -38,6 +37,5 @@ export {
   tenantApplicationService,
   tenantPropertyService,
   tenantPaymentService,
-  tenantSupportService,
-  tenantGoogleAuthService
+  tenantSupportService
 };

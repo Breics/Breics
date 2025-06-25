@@ -21,7 +21,10 @@ const VerifyEmailPage = () => {
     const token = queryParams.get('token');
     
     if (token) {
+      console.log('Verifying email with token:', token);
       dispatch(verifyEmail(token));
+    } else {
+      console.log('No token found in URL');
     }
     
     // Clean up on unmount
@@ -32,21 +35,15 @@ const VerifyEmailPage = () => {
 
   // Effect to handle verification success
   useEffect(() => {
-    if (isSuccess && user) {
-      // Check if profile is completed
-      if (user.profileStatus === 'EmailVerified') {
-        // Redirect to profile completion page after successful verification
-        setTimeout(() => {
-          navigate('/tenant/complete-profile');
-        }, 3000);
-      } else if (user.profileStatus === 'ProfileCompleted' || user.profileStatus === 'Verified') {
-        // If profile is already completed, go to dashboard
-        setTimeout(() => {
-          navigate('/tenant/dashboard');
-        }, 3000);
-      }
+    if (isSuccess) {
+      console.log('Email verification successful');
+      // Always redirect to login page after successful verification
+      // The user will then be required to log in and will be redirected to complete profile
+      setTimeout(() => {
+        navigate('/tenant/login');
+      }, 3000);
     }
-  }, [isSuccess, user, navigate]);
+  }, [isSuccess, navigate]);
 
   // Handle countdown for resend button
   useEffect(() => {

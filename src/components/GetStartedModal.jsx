@@ -18,7 +18,6 @@ const GetStartedModal = ({ isOpen, onClose }) => {
     onClose(); // Close modal first
     navigate('/tenant/signup'); // Navigate to the tenant signup page
   };
-  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-50 flex items-center justify-center">

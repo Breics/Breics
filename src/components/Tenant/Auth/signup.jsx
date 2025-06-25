@@ -112,8 +112,9 @@ const SignupPage = () => {
       lastName: formData.lastName.trim(),
       email: formData.email.trim().toLowerCase(),
       password: formData.password,
+      confirmPassword: formData.confirmPassword, // Add confirmPassword field for backend validation
       phoneNumber: formattedPhone
-      // Remove profileStatus - let the backend set the default value
+      // Let the backend set the default profileStatus
     };
     
     console.log('Submitting registration data:', { ...userData, password: '[REDACTED]' });
