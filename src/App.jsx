@@ -31,7 +31,10 @@ import VerifyEmailPage from "./components/Tenant/Auth/verifyEmail";
 import TenantDashboard from "./components/Tenant/Dashboard/TenantDashboard";
 import CompleteProfile from "./components/Tenant/Profile/CompleteProfile";
 import TenantProfilePage from "./components/Tenant/Pages/TenantProfile";
+import TenantSettings from "./components/Tenant/Pages/TenantSettings";
 import TenantLayout from "./components/Tenant/Layout/TenantLayout";
+import TenantFacility from "./components/Tenant/Pages/TenantFacility";
+import TenantEscalate from "./components/Tenant/Pages/TenantEscalate";
 
 function App() {
   return (
@@ -50,6 +53,9 @@ function App() {
         <Route path="/tenant" element={<TenantLayout />}>
           <Route path="dashboard" element={<TenantDashboard />} />
           <Route path="profile" element={<TenantProfilePage />} />
+          <Route path="settings" element={<TenantSettings />} />
+          <Route path="facility" element={<TenantFacility />} />
+          <Route path="escalate" element={<TenantEscalate />} />
         </Route>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -73,6 +79,7 @@ function App() {
           <Route path="new-property" element={<SubmitNewProperty/>} />
           <Route path="property-details/:id" element={<PropertyDetails />} />
           <Route path="tenants-profile/:tenantId" element={<TenantProfile />} />
+          <Route path="settings" element={<TenantSettings />} />
 
 
         </Route>

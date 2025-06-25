@@ -20,7 +20,7 @@ const TenantDashboard = () => {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-white p-4 rounded-lg shadow-sm flex justify-between items-center">
             <div>
               <span className="block text-3xl font-bold">0</span>
@@ -63,7 +63,7 @@ const TenantDashboard = () => {
         </div>
 
         {/* Main Sections */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Active Rentals Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h3 className="font-medium mb-6">Active Rentals</h3>

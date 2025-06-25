@@ -25,7 +25,7 @@ const UserDropdown = ({ user, handleLogout }) => {
   }, []);
   
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} style={{ position: 'relative', zIndex: 1000 }}>
       <button 
         className="flex items-center space-x-2 focus:outline-none hover:bg-gray-50 rounded-full py-1 px-2 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
@@ -49,7 +49,7 @@ const UserDropdown = ({ user, handleLogout }) => {
       </button>
       
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-[1000] border border-gray-200" style={{ position: 'absolute', zIndex: 1000 }}>
           <div className="px-4 py-3 border-b border-gray-100">
             <p className="text-sm font-medium text-gray-900">{user?.firstName} {user?.lastName}</p>
             <p className="text-xs text-gray-500 truncate">{user?.email}</p>
@@ -130,12 +130,12 @@ const TenantLayout = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header - Fixed at the top */}
-      <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          <Link to="/tenant/dashboard" className="text-2xl font-bold text-orange-500">BREICS</Link>
-          <div className="flex items-center space-x-4">
+      <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-30">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex justify-between items-center">
+          <Link to="/tenant/dashboard" className="text-xl sm:text-2xl font-bold text-orange-500">BREICS</Link>
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Status indicator - changes color based on verification status */}
-            <div className={`${user.profileStatus === 'Verified' ? 'bg-green-500' : 'bg-red-500'} text-white text-xs px-2 py-1 rounded-md flex items-center`}>
+            <div className={`${user.profileStatus === 'Verified' ? 'bg-green-500' : 'bg-red-500'} text-white text-xs px-1 sm:px-2 py-1 rounded-md flex items-center hidden sm:flex`}>
               <span className="mr-1">{user.profileStatus === 'Verified' ? 'Verified' : 'PendingAdminReview'}</span>
               <span className="h-2 w-2 bg-white rounded-full"></span>
             </div>
@@ -155,38 +155,44 @@ const TenantLayout = () => {
       </header>
 
       {/* Navigation Tabs - Fixed below header - no gap between header and nav */}
-      <nav className="bg-white fixed top-[56px] left-0 right-0 z-20 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex space-x-8">
+      <nav className="bg-white fixed top-[48px] sm:top-[56px] left-0 right-0 z-40 border-t border-gray-100 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="flex space-x-2 sm:space-x-4 md:space-x-8">
             <Link 
               to="/tenant/dashboard" 
-              className={`${currentPath === '/tenant/dashboard' ? 'border-b-2 border-orange-500 text-orange-500' : 'text-gray-500 hover:text-gray-700'} px-3 py-4 text-sm font-medium flex items-center`}
+              className={`${currentPath === '/tenant/dashboard' ? 'border-b-2 border-orange-500 text-orange-500' : 'text-gray-500 hover:text-gray-700'} px-2 sm:px-3 py-3 sm:py-4 text-xs sm:text-sm font-medium flex items-center whitespace-nowrap`}
             >
-              <span className="mr-1">🏠</span> Dashboard
+              <span className="mr-1 sm:mr-1">🏠</span> <span className="hidden xs:inline">Dashboard</span>
             </Link>
             <Link 
               to="/tenant/facility" 
               className={`${currentPath === '/tenant/facility' ? 'border-b-2 border-orange-500 text-orange-500' : 'text-gray-500 hover:text-gray-700'} px-3 py-4 text-sm font-medium flex items-center`}
             >
-              <span className="mr-1">🏢</span> Facility
+              <span className="mr-1 sm:mr-1">🏢</span> <span className="hidden xs:inline">Facility</span>
             </Link>
             <Link 
               to="/tenant/payment" 
               className={`${currentPath === '/tenant/payment' ? 'border-b-2 border-orange-500 text-orange-500' : 'text-gray-500 hover:text-gray-700'} px-3 py-4 text-sm font-medium flex items-center`}
             >
-              <span className="mr-1">💰</span> Payment
+              <span className="mr-1 sm:mr-1">💰</span> <span className="hidden xs:inline">Payment</span>
             </Link>
             <Link 
               to="/tenant/document" 
               className={`${currentPath === '/tenant/document' ? 'border-b-2 border-orange-500 text-orange-500' : 'text-gray-500 hover:text-gray-700'} px-3 py-4 text-sm font-medium flex items-center`}
             >
-              <span className="mr-1">📄</span> Document
+              <span className="mr-1 sm:mr-1">📄</span> <span className="hidden xs:inline">Document</span>
             </Link>
             <Link 
               to="/tenant/profile" 
               className={`${currentPath === '/tenant/profile' ? 'border-b-2 border-orange-500 text-orange-500' : 'text-gray-500 hover:text-gray-700'} px-3 py-4 text-sm font-medium flex items-center`}
             >
-              <span className="mr-1">👤</span> Profile
+              <span className="mr-1 sm:mr-1">👤</span> <span className="hidden xs:inline">Profile</span>
+            </Link>
+            <Link 
+              to="/tenant/settings" 
+              className={`${currentPath === '/tenant/settings' ? 'border-b-2 border-orange-500 text-orange-500' : 'text-gray-500 hover:text-gray-700'} px-3 py-4 text-sm font-medium flex items-center`}
+            >
+              <span className="mr-1 sm:mr-1">⚙️</span> <span className="hidden xs:inline">Settings</span>
             </Link>
           </div>
         </div>

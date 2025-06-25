@@ -49,6 +49,14 @@ export const TENANT_ENDPOINTS = {
   GET_PAYMENT_DETAILS: '/tenants/payments/:id',
   
   // Support
+  
+  // Tickets
+  GET_TICKETS: '/tickets',
+  CREATE_TICKET: '/tickets',
+  GET_TICKET: '/tickets/:id',
+  UPDATE_TICKET: '/tickets/:id',
+  ADD_COMMENT: '/tickets/:id/comments',
+  GET_TICKET_STATS: '/tickets/stats',
   CREATE_SUPPORT_TICKET: '/tenants/support',
   GET_SUPPORT_TICKETS: '/tenants/support',
   GET_SUPPORT_TICKET: '/tenants/support/:id',

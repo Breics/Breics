@@ -122,15 +122,81 @@ export const tenantAuthService = {
   },
   
   // Change password (when logged in)
-  changePassword: (currentPassword, newPassword) => {
+  changePassword: (currentPassword, newPassword, confirmNewPassword) => {
     return tenantApiClient.put(TENANT_ENDPOINTS.CHANGE_PASSWORD, {
       currentPassword,
-      newPassword
+      newPassword,
+      confirmNewPassword
     });
   }
 };
 
 // Tenant Profile API Services
+// Tenant Ticket API Services
+export const tenantTicketService = {
+  // Get all tickets for the tenant
+  getTickets: (filters = {}) => {
+    const queryParams = new URLSearchParams();
+    
+    // Add filters to query params if they exist
+    if (filters.status) queryParams.append('status', filters.status);
+    if (filters.category) queryParams.append('category', filters.category);
+    if (filters.sort) queryParams.append('sort', filters.sort);
+    
+    const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+    return tenantApiClient.get(`${TENANT_ENDPOINTS.GET_TICKETS}${queryString}`);
+  },
+  
+  // Get a specific ticket by ID
+  getTicketById: (ticketId) => {
+    return tenantApiClient.get(buildApiUrl(TENANT_ENDPOINTS.GET_TICKET, { id: ticketId }));
+  },
+  
+  // Create a new ticket
+  createTicket: (ticketData) => {
+    // Use FormData for file uploads
+    const formData = new FormData();
+    
+    // Add text fields
+    formData.append('title', ticketData.title);
+    formData.append('description', ticketData.description);
+    formData.append('category', ticketData.category);
+    formData.append('propertyId', ticketData.propertyId);
+    
+    // Add images if they exist
+    if (ticketData.images && ticketData.images.length > 0) {
+      ticketData.images.forEach((image, index) => {
+        formData.append('images', image);
+      });
+    }
+    
+    return tenantApiClient.post(TENANT_ENDPOINTS.CREATE_TICKET, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+  
+  // Update a ticket (tenant can only update description)
+  updateTicket: (ticketId, description) => {
+    return tenantApiClient.put(buildApiUrl(TENANT_ENDPOINTS.UPDATE_TICKET, { id: ticketId }), {
+      description
+    });
+  },
+  
+  // Add a comment to a ticket
+  addComment: (ticketId, text) => {
+    return tenantApiClient.post(buildApiUrl(TENANT_ENDPOINTS.ADD_COMMENT, { id: ticketId }), {
+      text
+    });
+  },
+  
+  // Get ticket statistics
+  getTicketStats: () => {
+    return tenantApiClient.get(TENANT_ENDPOINTS.GET_TICKET_STATS);
+  }
+};
+
 export const tenantProfileService = {
   // Get tenant profile
   getProfile: () => {
