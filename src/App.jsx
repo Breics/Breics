@@ -36,6 +36,9 @@ import PropInspections from "./components/Admin/Components/PropertyInspections";
 import AllProperties from "./components/Admin/Components/AllProperty";
 import AllLandlords from "./components/Admin/Components/AllLandlords";
 import LandlordProfile from "./components/Admin/Components/LanlordProfile";
+import AllTenants from "./components/Admin/Components/AllTenants";
+import TenantProfiles from "./components/Admin/Components/TenantsProfile";
+import Transactions from "./components/Admin/Components/Transaction";
 
 function App() {
   return (
@@ -85,7 +88,9 @@ function App() {
           <Route path="allproperties" element={<AllProperties />} />
           <Route path="alllanlords" element={<AllLandlords />} />
           <Route path="landlords/:id" element={<LandlordProfile />} />
-          
+          <Route path="alltenants" element={<AllTenants />} />
+          <Route path="tenants/:id" element={<TenantProfiles />} />
+          <Route path="transactions" element={<Transactions />} />
 
 
         </Route>

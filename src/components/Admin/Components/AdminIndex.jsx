@@ -26,74 +26,89 @@ const defaultDashboardData = {
 
 const AdminBoard = () => {
   const [dashboardData, setDashboardData] = useState(defaultDashboardData);
-  const [userData, setUserData] = useState({
-    firstName: "",
-    isVerified: false,
-    accountType: "",
-  });
+  const [adminName, setAdminName] = useState("");
 
   useEffect(() => {
-    const userId = localStorage.getItem("user_id");
     const token = localStorage.getItem("token");
 
-    if (!userId || !token) {
-      console.warn("User ID or token not found in localStorage.");
+    if (!token) {
+      console.warn("Token not found.");
       return;
     }
 
-    // Fetch user info
-    axios
-      .get(`https://breics-backend.onrender.com/api/landlords/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const landlord = res.data.data.landlord;
-        setUserData({
-          firstName: landlord.firstName || "",
-          isVerified: landlord.verificationStatus?.isVerified || false,
-          accountType: landlord.accountType || "",
-        });
-      })
-      .catch((err) => {
-        console.error("Failed to fetch user data:", err.response?.data || err.message);
-      });
+    const fetchAdmin = async () => {
+      try {
+        const res = await axios.get(
+          `https://breics-backend.onrender.com/api/admin/profile`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setAdminName(res.data?.data?.admin?.firstName || "Admin");
+      } catch (err) {
+        console.error("Failed to fetch admin profile:", err.message);
+      }
+    };
 
-    // Fetch properties for dashboard
     const fetchDashboardData = async () => {
       try {
-        const response = await axios.get(`https://breics-backend.onrender.com/api/properties`);
-        const allProperties = response.data.data;
+        // 1. Fetch all properties
+        const propRes = await axios.get(`https://breics-backend.onrender.com/api/properties`);
+        const allProperties = propRes.data?.data || [];
 
-        const userProperties = allProperties.filter(
-          (property) => String(property.owner?._id) === String(userId)
-        );
+        const occupied = allProperties.filter((p) => p.occupied).length;
+        const vacant = allProperties.filter((p) => !p.occupied && p.verified).length;
+        const pending = allProperties.filter((p) => !p.verified).length;
 
-        const occupied = userProperties.filter((p) => p.occupied).length;
-        const vacant = userProperties.filter((p) => !p.occupied && p.verified).length;
-        const pending = userProperties.filter((p) => !p.verified).length;
+        // 2. Fetch tenants
+        const tenantRes = await axios.get(`https://breics-backend.onrender.com/api/tenants`);
+        const allTenants = tenantRes.data?.data || [];
+        const activeTenants = allTenants.filter((t) => t.isActive).length;
+        const inactiveTenants = allTenants.length - activeTenants;
 
-        const updatedData = {
-          ...defaultDashboardData,
+        // 3. Fetch tickets
+        const ticketRes = await axios.get(`https://breics-backend.onrender.com/api/tickets`);
+        const allTickets = ticketRes.data?.data || [];
+        const openTickets = allTickets.filter((t) => t.status === "open").length;
+        const closedTickets = allTickets.filter((t) => t.status === "closed").length;
+
+        // 4. Fetch rental income
+        const incomeRes = await axios.get(`https://breics-backend.onrender.com/api/rentals`);
+        const allRentals = incomeRes.data?.data || [];
+        const paid = allRentals.filter((r) => r.status === "paid").reduce((acc, curr) => acc + (curr.amount || 0), 0);
+        const overdue = allRentals.filter((r) => r.status === "overdue").reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+        // Set updated dashboard data
+        setDashboardData({
           totalProperties: {
             occupied,
             vacant,
             pending,
-            total: userProperties.length,
+            total: allProperties.length,
           },
-        };
-
-        setDashboardData(updatedData);
-      } catch (error) {
-        console.error("Error fetching properties for dashboard:", error.message);
+          rentalIncome: {
+            paid,
+            overdue,
+          },
+          tenants: {
+            active: activeTenants,
+            inactive: inactiveTenants,
+          },
+          tickets: {
+            open: openTickets,
+            closed: closedTickets,
+          },
+        });
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err.message);
       }
     };
 
+    fetchAdmin();
     fetchDashboardData();
+
     const interval = setInterval(fetchDashboardData, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  // Safely destructure with fallbacks
   const {
     totalProperties = {},
     rentalIncome = {},
@@ -103,8 +118,8 @@ const AdminBoard = () => {
 
   return (
     <div className="p-8">
-      <h2 className="text-xl font-semibold">Hi {userData.firstName} 👋</h2>
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <h2 className="text-xl font-semibold">Hi {adminName} 👋</h2>
+      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
 
       <div className="flex flex-wrap gap-4 mb-10">
         <ChartCard

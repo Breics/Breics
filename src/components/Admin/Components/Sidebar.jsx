@@ -21,7 +21,7 @@ const navItems = [
   { label: "Application", icon: <FiFileText />, path: "/admin-dashboard/application" },
   { label: "Properties", icon: <FiHome />, path: "/admin-dashboard/allproperties" },
   { label: "Landlords", icon: <FiUserCheck />, path: "/admin-dashboard/alllanlords" },
-  { label: "Tenants", icon: <FiUsers />, path: "/admin-dashboard/tenants" },
+  { label: "Tenants", icon: <FiUsers />, path: "/admin-dashboard/alltenants" },
   { label: "Agents", icon: <FiUserCheck />, path: "/admin-dashboard/agents" },
   { label: "Transactions", icon: <FiCreditCard />, path: "/admin-dashboard/transactions" },
   { label: "Facility", icon: <FiServer />, path: "/admin-dashboard/facility" },

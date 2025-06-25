@@ -8,12 +8,21 @@ const PropertyLists = ({ properties }) => {
         <p>No properties found.</p>
       ) : (
         properties.map((property) => (
-          <div className="property-card" key={property.id}>
+          <div className="property-card" key={property._id || property.id}>
             <img src={property.image} alt={property.title} />
             <div className="property-info">
               <h4>{property.title}</h4>
-              <p>{property.location}</p>
-              <p>₦{property.price.toLocaleString()}</p>
+              <p>
+                {[
+                  property.location?.address,
+                  property.location?.city,
+                  property.location?.state,
+                  property.location?.country
+                ]
+                  .filter(Boolean)
+                  .join(', ') || 'No location info'}
+              </p>
+              <p>₦{property.price?.toLocaleString() || 'N/A'}</p>
             </div>
           </div>
         ))

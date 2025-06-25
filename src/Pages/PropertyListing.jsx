@@ -1,10 +1,12 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import NavBar from "../components/Navbar";
 import FilterBar from "../components/FilterBar";
 import PropertyLists from "../components/Properties";
 import MapView from "../components/MapView";
-import { useEffect, useState } from "react";
 import LandlordCTA from "../components/LandlordCTA";
 import Footer from "../components/Footer";
+
 const PropertyListing = () => {
   const [filters, setFilters] = useState({
     location: "",
@@ -17,14 +19,31 @@ const PropertyListing = () => {
   const fetchProperties = async () => {
     try {
       const { location, type, budget } = filters;
-      const response = await axios.get("/api/properties", {
-        params: {
-          ...(location && { location }),
-          ...(type && { type }),
-          ...(budget && { budget }),
-        },
-      });
-      setProperties(response.data);
+
+      const response = await axios.get(
+        "https://breics-backend.onrender.com/api/properties"
+      );
+
+      let filtered = response.data.data.filter((property) => property.status === "available");
+
+      // Apply frontend filtering if backend doesn’t support query params
+      if (location) {
+        filtered = filtered.filter((p) =>
+          p.location?.city?.toLowerCase().includes(location.toLowerCase())
+        );
+      }
+
+      if (type) {
+        filtered = filtered.filter((p) =>
+          p.propertyType?.toLowerCase().includes(type.toLowerCase())
+        );
+      }
+
+      if (budget) {
+        filtered = filtered.filter((p) => Number(p.price) <= Number(budget));
+      }
+
+      setProperties(filtered);
     } catch (error) {
       console.error("Failed to fetch properties", error);
     }
