@@ -46,6 +46,7 @@ import LandlordProfile from "./components/Admin/Components/LanlordProfile";
 import AllTenants from "./components/Admin/Components/AllTenants";
 import TenantProfiles from "./components/Admin/Components/TenantsProfile";
 import Transactions from "./components/Admin/Components/Transaction";
+import VerifyEmail from "./Pages/VerifyEmail";
 
 function App() {
   return (
@@ -60,6 +61,8 @@ function App() {
         <Route path="/tenant/signup" element={<SignupPage />} />
         <Route path="/tenant/login" element={<LoginPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/verify-mail" element={<VerifyEmail />} />
+
         <Route path="/tenant/complete-profile" element={<CompleteProfile />} />
         <Route path="/tenant" element={<TenantLayout />}>
           <Route path="dashboard" element={<TenantDashboard />} />
