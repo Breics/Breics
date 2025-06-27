@@ -81,7 +81,7 @@ useEffect(() => {
 
   {/* Desktop Nav */}
   <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
-    <Link to="/find-home" className="flex flex-col items-start text-black">
+    <Link to="/find-property" className="flex flex-col items-start text-black">
       Find home <span className="text-xs text-gray-500">For renters</span>
     </Link>
     <Link to="/list-home" className="flex flex-col items-start text-black">

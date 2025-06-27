@@ -5,6 +5,7 @@ const SubmitNewProperty = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState(
     {
+    images: [],
     title: "",
     description: "",
     propertyType: "",
@@ -31,7 +32,10 @@ const SubmitNewProperty = () => {
     availableTo: "",
     rules: [],
     agreement: false,
-  }
+  },
+
+ 
+
 );
 
   const [feature, setFeature] = useState({
@@ -268,7 +272,7 @@ const SubmitNewProperty = () => {
     setShowModal(true);
   };
 
-  const totalPages = 5;
+  const totalPages = 6;
 
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -492,6 +496,7 @@ const SubmitNewProperty = () => {
           </div>
         );
       case 5:
+
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Rules</h3>
@@ -553,7 +558,52 @@ const SubmitNewProperty = () => {
             </label>
           </div>
         );
-      default:
+      case 6:
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold text-gray-900">Upload Images</h3>
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={(e) => {
+          const files = Array.from(e.target.files);
+          setFormData((prev) => ({
+            ...prev,
+            images: [...prev.images, ...files],
+          }));
+        }}
+        className="w-full p-2 border border-gray-300 rounded-md"
+      />
+      {formData.images.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+          {formData.images.map((file, idx) => (
+            <div key={idx} className="relative group">
+              <img
+                src={URL.createObjectURL(file)}
+                alt={`Preview ${idx}`}
+                className="w-full h-32 object-cover rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    images: prev.images.filter((_, i) => i !== idx),
+                  }))
+                }
+                className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full text-xs opacity-80 hover:opacity-100"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+        default:
         return null;
     }
   };
