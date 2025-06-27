@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const SubmitNewProperty = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(
-    {
+  const [formData, setFormData] = useState({
     images: [],
     title: "",
     description: "",
@@ -32,11 +31,7 @@ const SubmitNewProperty = () => {
     availableTo: "",
     rules: [],
     agreement: false,
-  },
-
- 
-
-);
+  });
 
   const [feature, setFeature] = useState({
     name: "",
@@ -191,31 +186,80 @@ const SubmitNewProperty = () => {
       return;
     }
 
-    const transformedData = {
-      ...formData,
-      price: Number(formData.price),
-      yearBuilt: Number(formData.yearBuilt),
-      rooms: {
-        ...formData.rooms,
-        bedrooms: Number(formData.rooms.bedrooms),
-        bathrooms: Number(formData.rooms.bathrooms),
-        kitchens: Number(formData.rooms.kitchens),
-        livingRooms: Number(formData.rooms.livingRooms),
-        additionalRooms: formData.rooms.additionalRooms,
-      },
-    };
+    const token = localStorage.getItem("token");
+    const formDataToSend = new FormData();
+
+    formDataToSend.append("title", formData.title);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("propertyType", formData.propertyType);
+    formDataToSend.append("status", formData.status);
+    formDataToSend.append("price", Number(formData.price));
+    formDataToSend.append("yearBuilt", Number(formData.yearBuilt));
+    formDataToSend.append("availableFrom", formData.availableFrom);
+    formDataToSend.append("availableTo", formData.availableTo);
+    formDataToSend.append("agreement", formData.agreement);
+
+    // Append location fields
+    Object.entries(formData.location).forEach(([key, value]) => {
+      formDataToSend.append(`location[${key}]`, value);
+    });
+
+    // Append rooms fields
+    Object.entries(formData.rooms).forEach(([key, value]) => {
+      if (key === "additionalRooms") {
+        value.forEach((room, index) => {
+          formDataToSend.append(
+            `rooms[additionalRooms][${index}][name]`,
+            room.name
+          );
+          formDataToSend.append(
+            `rooms[additionalRooms][${index}][description]`,
+            room.description
+          );
+        });
+      } else {
+        formDataToSend.append(`rooms[${key}]`, Number(value));
+      }
+    });
+
+    // Append features
+    formData.features.forEach((f, index) => {
+      formDataToSend.append(`features[${index}][name]`, f.name);
+      formDataToSend.append(`features[${index}][description]`, f.description);
+      formDataToSend.append(
+        `features[${index}][isHighlighted]`,
+        f.isHighlighted
+      );
+    });
+
+    // Append amenities
+    formData.amenities.forEach((a, index) => {
+      formDataToSend.append(`amenities[${index}]`, a);
+    });
+
+    // Append rules
+    formData.rules.forEach((r, index) => {
+      formDataToSend.append(`rules[${index}][title]`, r.title);
+      formDataToSend.append(`rules[${index}][description]`, r.description);
+      formDataToSend.append(`rules[${index}][isRequired]`, r.isRequired);
+    });
+
+    // Append images
+    formData.images.forEach((img) => {
+      formDataToSend.append("images", img);
+    });
 
     try {
-      console.log(transformedData);
-      const token = localStorage.getItem("token");
-      const res = await fetch("https://breics-backend.onrender.com/api/properties", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(transformedData),
-      });
+      const res = await fetch(
+        "https://breics-backend.onrender.com/api/properties",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataToSend,
+        }
+      );
 
       const result = await res.json();
       if (res.ok) {
@@ -252,6 +296,7 @@ const SubmitNewProperty = () => {
           availableTo: "",
           rules: [],
           agreement: false,
+          images: [],
         });
 
         setFeature({ name: "", description: "", isHighlighted: false });
@@ -291,7 +336,9 @@ const SubmitNewProperty = () => {
       case 1:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">General Info</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              General Info
+            </h3>
             <input
               name="title"
               placeholder="Title"
@@ -350,34 +397,40 @@ const SubmitNewProperty = () => {
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Location</h3>
-            {["address", "city", "state", "postalCode", "country"].map((field) => (
-              <input
-                key={field}
-                name={`location.${field}`}
-                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                value={formData.location[field]}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            ))}
+            {["address", "city", "state", "postalCode", "country"].map(
+              (field) => (
+                <input
+                  key={field}
+                  name={`location.${field}`}
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                  value={formData.location[field]}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+              )
+            )}
           </div>
         );
       case 3:
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Rooms</h3>
-            {["bedrooms", "bathrooms", "kitchens", "livingRooms"].map((room) => (
-              <input
-                key={room}
-                name={`rooms.${room}`}
-                type="number"
-                placeholder={room.charAt(0).toUpperCase() + room.slice(1)}
-                value={formData.rooms[room]}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            ))}
-            <h4 className="text-md font-medium text-gray-700">Add Additional Room</h4>
+            {["bedrooms", "bathrooms", "kitchens", "livingRooms"].map(
+              (room) => (
+                <input
+                  key={room}
+                  name={`rooms.${room}`}
+                  type="number"
+                  placeholder={room.charAt(0).toUpperCase() + room.slice(1)}
+                  value={formData.rooms[room]}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+              )
+            )}
+            <h4 className="text-md font-medium text-gray-700">
+              Add Additional Room
+            </h4>
             <input
               placeholder="Room Name"
               value={additionalRoom.name}
@@ -390,7 +443,10 @@ const SubmitNewProperty = () => {
               placeholder="Description"
               value={additionalRoom.description}
               onChange={(e) =>
-                setAdditionalRoom((r) => ({ ...r, description: e.target.value }))
+                setAdditionalRoom((r) => ({
+                  ...r,
+                  description: e.target.value,
+                }))
               }
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
@@ -420,11 +476,61 @@ const SubmitNewProperty = () => {
       case 4:
         return (
           <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Upload Images
+            </h3>
+            <input
+              key={formData.images.length}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                const files = Array.from(e.target.files);
+                setFormData((prev) => ({
+                  ...prev,
+                  images: [...prev.images, ...files],
+                }));
+              }}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+
+            {formData.images.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+                {formData.images.map((file, idx) => (
+                  <div key={idx} className="relative group">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${idx}`}
+                      className="w-full h-32 object-cover rounded-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: prev.images.filter((_, i) => i !== idx),
+                        }))
+                      }
+                      className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full text-xs opacity-80 hover:opacity-100"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      case 5:
+        return (
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Features</h3>
             <input
               placeholder="Feature Name"
               value={feature.name}
-              onChange={(e) => setFeature((f) => ({ ...f, name: e.target.value }))}
+              onChange={(e) =>
+                setFeature((f) => ({ ...f, name: e.target.value }))
+              }
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
             <input
@@ -495,15 +601,16 @@ const SubmitNewProperty = () => {
             ))}
           </div>
         );
-      case 5:
-
+      case 6:
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Rules</h3>
             <input
               placeholder="Rule Title"
               value={rule.title}
-              onChange={(e) => setRule((r) => ({ ...r, title: e.target.value }))}
+              onChange={(e) =>
+                setRule((r) => ({ ...r, title: e.target.value }))
+              }
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
             <input
@@ -558,52 +665,8 @@ const SubmitNewProperty = () => {
             </label>
           </div>
         );
-      case 6:
-  return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">Upload Images</h3>
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={(e) => {
-          const files = Array.from(e.target.files);
-          setFormData((prev) => ({
-            ...prev,
-            images: [...prev.images, ...files],
-          }));
-        }}
-        className="w-full p-2 border border-gray-300 rounded-md"
-      />
-      {formData.images.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-          {formData.images.map((file, idx) => (
-            <div key={idx} className="relative group">
-              <img
-                src={URL.createObjectURL(file)}
-                alt={`Preview ${idx}`}
-                className="w-full h-32 object-cover rounded-md"
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    images: prev.images.filter((_, i) => i !== idx),
-                  }))
-                }
-                className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full text-xs opacity-80 hover:opacity-100"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 
-        default:
+      default:
         return null;
     }
   };
@@ -611,15 +674,23 @@ const SubmitNewProperty = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6 sm:p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Submit New Property</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Submit New Property
+        </h2>
         {successMsg && (
-          <p className="text-green-600 bg-green-100 p-3 rounded-md mb-4">{successMsg}</p>
+          <p className="text-green-600 bg-green-100 p-3 rounded-md mb-4">
+            {successMsg}
+          </p>
         )}
         {errorMsg && (
-          <p className="text-red-600 bg-red-100 p-3 rounded-md mb-4">{errorMsg}</p>
+          <p className="text-red-600 bg-red-100 p-3 rounded-md mb-4">
+            {errorMsg}
+          </p>
         )}
         {validationError && (
-          <p className="text-red-600 bg-red-100 p-3 rounded-md mb-4">{validationError}</p>
+          <p className="text-red-600 bg-red-100 p-3 rounded-md mb-4">
+            {validationError}
+          </p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -655,8 +726,12 @@ const SubmitNewProperty = () => {
         {showModal && (
           <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Submission</h3>
-              <p className="text-gray-600 mb-6">Do you want to list this property?</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Confirm Submission
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Do you want to list this property?
+              </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={handleFormSubmit}
