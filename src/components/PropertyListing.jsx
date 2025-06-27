@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropertyCard from './PropertyCard';
 import Lis from '../image/lis.png';
 
+
 const tabs = [
   'Shared space',
   'Bed space',

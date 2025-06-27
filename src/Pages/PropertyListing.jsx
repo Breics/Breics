@@ -7,6 +7,7 @@ import MapView from "../components/MapView";
 import LandlordCTA from "../components/LandlordCTA";
 import Footer from "../components/Footer";
 
+
 const PropertyListing = () => {
   const [filters, setFilters] = useState({
     location: "",
