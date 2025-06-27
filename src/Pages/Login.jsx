@@ -1,5 +1,4 @@
- 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
 import backgroundImg from "../image/heo.jpg";
@@ -26,8 +25,10 @@ const Login = () => {
     },
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
   const isLogin = mode === "login";
 
   const handleToggle = (tab) => {
@@ -48,6 +49,7 @@ const Login = () => {
         },
       });
       setError("");
+      setSuccess("");
     }
   };
 
@@ -72,9 +74,34 @@ const Login = () => {
     }
   };
 
+  const handleResendEmail = async () => {
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await axios.post(
+        "https://breics-backend.onrender.com/api/landlords/request-verification-email",
+        { email: formData.email }
+      );
+      if (res.data.success) {
+        setSuccess("Verification email resent successfully!");
+      } else {
+        setError(res.data.message || "Failed to resend verification email.");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Server error. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
@@ -94,7 +121,7 @@ const Login = () => {
           localStorage.setItem("user_id", landlord.id);
           localStorage.setItem("first_name", landlord.firstName);
           localStorage.setItem("user", JSON.stringify(landlord));
-          window.location.href = "/verify";
+          navigate("/verify");
         } else {
           setError("Login failed.");
         }
@@ -153,8 +180,7 @@ const Login = () => {
         );
 
         if (res.data.success) {
-          alert("Registration successful! Please log in.");
-          setMode("login");
+          navigate("/verify-mail", { state: { email: formData.email } });
         } else {
           setError(res.data.message || "Registration failed.");
         }
@@ -174,7 +200,6 @@ const Login = () => {
       style={{ backgroundImage: `url(${backgroundImg})` }}
     >
       <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg w-full max-w-md relative transition-all duration-300 ease-in-out">
-        {/* Exit Button */}
         <button
           onClick={() => navigate("/")}
           className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
@@ -182,14 +207,12 @@ const Login = () => {
           <FaTimes />
         </button>
 
-        {/* Dynamic Heading */}
         <h2 className="text-center font-semibold text-gray-800 mb-4 text-lg">
           {isLogin
             ? "Login to Breics – List your properties"
             : "Register on Breics – You are a step away to list your home"}
         </h2>
 
-        {/* Toggle Tabs */}
         <div className="flex justify-between border-b pb-3 mb-5">
           <button
             className={`flex-1 py-2 text-center transition-all duration-200 ${
@@ -216,6 +239,11 @@ const Login = () => {
         {error && (
           <div className="bg-red-100 text-red-700 px-3 py-2 mb-3 rounded text-center text-sm">
             {error}
+          </div>
+        )}
+        {success && (
+          <div className="bg-green-100 text-green-700 px-3 py-2 mb-3 rounded text-center text-sm">
+            {success}
           </div>
         )}
 
@@ -293,7 +321,6 @@ const Login = () => {
             className="border border-gray-300 rounded px-3 py-2"
           />
 
-          {/* Password field with icon */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -312,7 +339,6 @@ const Login = () => {
             </span>
           </div>
 
-          {/* Confirm Password for register only */}
           {!isLogin && (
             <>
               <div className="relative">
@@ -334,7 +360,8 @@ const Login = () => {
               </div>
 
               <p className="text-xs text-gray-500 mt-1">
-                Password must contain at least 8 characters, including uppercase, lowercase, number, and special character (!@#$%^&*).
+                Password must contain at least 8 characters, including uppercase,
+                lowercase, number, and special character (!@#$%^&*).
               </p>
 
               <label className="text-sm flex items-center gap-2">
@@ -376,6 +403,5 @@ const Login = () => {
       </div>
     </div>
   );
-};
-
+}
 export default Login;
