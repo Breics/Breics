@@ -16,6 +16,10 @@ const SubmitNewProperty = () => {
       state: "",
       postalCode: "",
       country: "Nigeria",
+      coordinates: {
+        lat: "",
+        lng: "",
+      },
     },
     rooms: {
       bedrooms: "",
@@ -31,6 +35,8 @@ const SubmitNewProperty = () => {
     availableTo: "",
     rules: [],
     agreement: false,
+    mainImageIndex: null,
+    isActive: true,
   });
 
   const [feature, setFeature] = useState({
@@ -53,11 +59,31 @@ const SubmitNewProperty = () => {
   const [validationError, setValidationError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked, files } = e.target;
 
-    if (name.includes("location.")) {
+    if (type === "file") {
+      const newFiles = Array.from(files);
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...newFiles],
+        mainImageIndex: prev.mainImageIndex === null && newFiles.length > 0 ? prev.images.length : prev.mainImageIndex,
+      }));
+    } else if (name.includes("location.coordinates.")) {
+      const key = name.split(".")[2];
+      setFormData((prev) => ({
+        ...prev,
+        location: {
+          ...prev.location,
+          coordinates: {
+            ...prev.location.coordinates,
+            [key]: value,
+          },
+        },
+      }));
+    } else if (name.includes("location.")) {
       const key = name.split(".")[1];
       setFormData((prev) => ({
         ...prev,
@@ -75,10 +101,15 @@ const SubmitNewProperty = () => {
           [key]: value,
         },
       }));
-    } else if (name === "agreement") {
+    } else if (name === "agreement" || name === "isActive") {
       setFormData((prev) => ({
         ...prev,
-        agreement: checked,
+        [name]: checked,
+      }));
+    } else if (name === "mainImageIndex") {
+      setFormData((prev) => ({
+        ...prev,
+        mainImageIndex: parseInt(value),
       }));
     } else {
       setFormData((prev) => ({
@@ -95,11 +126,28 @@ const SubmitNewProperty = () => {
       "propertyType",
       "price",
       "yearBuilt",
+      "location.address",
+      "location.city",
+      "location.state",
+      "location.postalCode",
+      "location.coordinates.lat",
+      "location.coordinates.lng",
     ];
     for (const key of required) {
-      if (!formData[key]) return `Please fill in the ${key} field.`;
+      const keys = key.split(".");
+      let value = formData;
+      for (const k of keys) {
+        value = value[k];
+        if (value === undefined || value === "") {
+          return `Please fill in the ${keys.join(" ")} field.`;
+        }
+      }
     }
     if (!formData.agreement) return "You must agree to the condition.";
+    if (formData.images.length === 0) return "Please upload at least one image.";
+    if (formData.mainImageIndex === null || formData.mainImageIndex >= formData.images.length) {
+      return "Please select a main image.";
+    }
     return "";
   };
 
@@ -179,16 +227,31 @@ const SubmitNewProperty = () => {
     }));
   };
 
+  const removeImage = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+      mainImageIndex:
+        prev.mainImageIndex === index
+          ? null
+          : prev.mainImageIndex > index && prev.mainImageIndex !== null
+          ? prev.mainImageIndex - 1
+          : prev.mainImageIndex,
+    }));
+  };
+
   const handleFormSubmit = async () => {
+    setIsLoading(true);
+    setErrorMsg("");
     const error = validateForm();
     if (error) {
       setValidationError(error);
+      setShowModal(false);
+      setIsLoading(false);
       return;
     }
 
-    const token = localStorage.getItem("token");
     const formDataToSend = new FormData();
-
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("propertyType", formData.propertyType);
@@ -198,10 +261,17 @@ const SubmitNewProperty = () => {
     formDataToSend.append("availableFrom", formData.availableFrom);
     formDataToSend.append("availableTo", formData.availableTo);
     formDataToSend.append("agreement", formData.agreement);
+    formDataToSend.append("isActive", formData.isActive);
+    formDataToSend.append("mainImageIndex", formData.mainImageIndex);
 
     // Append location fields
     Object.entries(formData.location).forEach(([key, value]) => {
-      formDataToSend.append(`location[${key}]`, value);
+      if (key === "coordinates") {
+        formDataToSend.append("location[coordinates][lat]", Number(value.lat));
+        formDataToSend.append("location[coordinates][lng]", Number(value.lng));
+      } else {
+        formDataToSend.append(`location[${key}]`, value);
+      }
     });
 
     // Append rooms fields
@@ -218,7 +288,7 @@ const SubmitNewProperty = () => {
           );
         });
       } else {
-        formDataToSend.append(`rooms[${key}]`, Number(value));
+        formDataToSend.append(`rooms[${key}]`, Number(value) || 0);
       }
     });
 
@@ -250,18 +320,28 @@ const SubmitNewProperty = () => {
     });
 
     try {
-      const res = await fetch(
-        "https://breics-backend.onrender.com/api/properties",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formDataToSend,
-        }
-      );
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setErrorMsg("Authentication token not found. Please log in again.");
+        setShowModal(false);
+        setIsLoading(false);
+        return;
+      }
+
+      console.log("Submitting form data:", Object.fromEntries(formDataToSend));
+      console.log("Images to upload:", formData.images);
+
+      const res = await fetch("https://breics-backend.onrender.com/api/properties", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
 
       const result = await res.json();
+      console.log("Server response:", result);
+
       if (res.ok) {
         setSuccessMsg("Property submitted successfully!");
         navigate("/dashboard/properties", { state: { newSubmitted: true } });
@@ -281,6 +361,10 @@ const SubmitNewProperty = () => {
             state: "",
             postalCode: "",
             country: "Nigeria",
+            coordinates: {
+              lat: "",
+              lng: "",
+            },
           },
           rooms: {
             bedrooms: "",
@@ -297,6 +381,8 @@ const SubmitNewProperty = () => {
           rules: [],
           agreement: false,
           images: [],
+          mainImageIndex: null,
+          isActive: true,
         });
 
         setFeature({ name: "", description: "", isHighlighted: false });
@@ -304,10 +390,17 @@ const SubmitNewProperty = () => {
         setAdditionalRoom({ name: "", description: "" });
         setNewAmenity("");
       } else {
-        setErrorMsg(result.message || "An error occurred.");
+        setErrorMsg(result.message || "An error occurred during submission.");
       }
-    } catch {
-      setErrorMsg("Server error.");
+    } catch (err) {
+      console.error("Submission error:", err);
+      if (err.message.includes("Failed to fetch")) {
+        setErrorMsg("Unable to connect to the server. Please check your network or server status.");
+      } else {
+        setErrorMsg("Server error: " + err.message);
+      }
+    } finally {
+      setIsLoading(false);
     }
     setShowModal(false);
   };
@@ -336,9 +429,7 @@ const SubmitNewProperty = () => {
       case 1:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              General Info
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">General Info</h3>
             <input
               name="title"
               placeholder="Title"
@@ -356,7 +447,7 @@ const SubmitNewProperty = () => {
             <input
               name="propertyType"
               type="text"
-              placeholder="Property type"
+              placeholder="Property type (e.g., apartment)"
               value={formData.propertyType}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -397,40 +488,52 @@ const SubmitNewProperty = () => {
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Location</h3>
-            {["address", "city", "state", "postalCode", "country"].map(
-              (field) => (
-                <input
-                  key={field}
-                  name={`location.${field}`}
-                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  value={formData.location[field]}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              )
-            )}
+            {["address", "city", "state", "postalCode", "country"].map((field) => (
+              <input
+                key={field}
+                name={`location.${field}`}
+                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                value={formData.location[field]}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            ))}
+            <input
+              name="location.coordinates.lat"
+              type="number"
+              step="any"
+              placeholder="Latitude"
+              value={formData.location.coordinates.lat}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+            <input
+              name="location.coordinates.lng"
+              type="number"
+              step="any"
+              placeholder="Longitude"
+              value={formData.location.coordinates.lng}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
           </div>
         );
       case 3:
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Rooms</h3>
-            {["bedrooms", "bathrooms", "kitchens", "livingRooms"].map(
-              (room) => (
-                <input
-                  key={room}
-                  name={`rooms.${room}`}
-                  type="number"
-                  placeholder={room.charAt(0).toUpperCase() + room.slice(1)}
-                  value={formData.rooms[room]}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              )
-            )}
-            <h4 className="text-md font-medium text-gray-700">
-              Add Additional Room
-            </h4>
+            {["bedrooms", "bathrooms", "kitchens", "livingRooms"].map((room) => (
+              <input
+                key={room}
+                name={`rooms.${room}`}
+                type="number"
+                placeholder={room.charAt(0).toUpperCase() + room.slice(1)}
+                value={formData.rooms[room]}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            ))}
+            <h4 className="text-md font-medium text-gray-700">Add Additional Room</h4>
             <input
               placeholder="Room Name"
               value={additionalRoom.name}
@@ -443,10 +546,7 @@ const SubmitNewProperty = () => {
               placeholder="Description"
               value={additionalRoom.description}
               onChange={(e) =>
-                setAdditionalRoom((r) => ({
-                  ...r,
-                  description: e.target.value,
-                }))
+                setAdditionalRoom((r) => ({ ...r, description: e.target.value }))
               }
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
@@ -476,24 +576,18 @@ const SubmitNewProperty = () => {
       case 4:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Upload Images
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">Upload Images</h3>
             <input
               key={formData.images.length}
               type="file"
               accept="image/*"
               multiple
-              onChange={(e) => {
-                const files = Array.from(e.target.files);
-                setFormData((prev) => ({
-                  ...prev,
-                  images: [...prev.images, ...files],
-                }));
-              }}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
-
+            <p className="text-sm text-gray-500">
+              Upload up to 5 images (JPG, PNG, max 5MB each)
+            </p>
             {formData.images.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
                 {formData.images.map((file, idx) => (
@@ -503,14 +597,20 @@ const SubmitNewProperty = () => {
                       alt={`Preview ${idx}`}
                       className="w-full h-32 object-cover rounded-md"
                     />
+                    <div className="absolute top-1 left-1 flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name="mainImageIndex"
+                        value={idx}
+                        checked={formData.mainImageIndex === idx}
+                        onChange={handleChange}
+                        className="h-4 w-4 text-orange-500 focus:ring-orange-500"
+                      />
+                      <span className="text-sm text-gray-700">Main Image</span>
+                    </div>
                     <button
                       type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          images: prev.images.filter((_, i) => i !== idx),
-                        }))
-                      }
+                      onClick={() => removeImage(idx)}
                       className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full text-xs opacity-80 hover:opacity-100"
                     >
                       ✕
@@ -528,9 +628,7 @@ const SubmitNewProperty = () => {
             <input
               placeholder="Feature Name"
               value={feature.name}
-              onChange={(e) =>
-                setFeature((f) => ({ ...f, name: e.target.value }))
-              }
+              onChange={(e) => setFeature((f) => ({ ...f, name: e.target.value }))}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
             <input
@@ -608,9 +706,7 @@ const SubmitNewProperty = () => {
             <input
               placeholder="Rule Title"
               value={rule.title}
-              onChange={(e) =>
-                setRule((r) => ({ ...r, title: e.target.value }))
-              }
+              onChange={(e) => setRule((r) => ({ ...r, title: e.target.value }))}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
             <input
@@ -656,6 +752,16 @@ const SubmitNewProperty = () => {
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
+                name="isActive"
+                checked={formData.isActive}
+                onChange={handleChange}
+                className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+              />
+              <span className="text-gray-700">List property as active</span>
+            </label>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
                 name="agreement"
                 checked={formData.agreement}
                 onChange={handleChange}
@@ -665,7 +771,6 @@ const SubmitNewProperty = () => {
             </label>
           </div>
         );
-
       default:
         return null;
     }
@@ -674,23 +779,15 @@ const SubmitNewProperty = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6 sm:p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Submit New Property
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Submit New Property</h2>
         {successMsg && (
-          <p className="text-green-600 bg-green-100 p-3 rounded-md mb-4">
-            {successMsg}
-          </p>
+          <p className="text-green-600 bg-green-100 p-3 rounded-md mb-4">{successMsg}</p>
         )}
         {errorMsg && (
-          <p className="text-red-600 bg-red-100 p-3 rounded-md mb-4">
-            {errorMsg}
-          </p>
+          <p className="text-red-600 bg-red-100 p-3 rounded-md mb-4">{errorMsg}</p>
         )}
         {validationError && (
-          <p className="text-red-600 bg-red-100 p-3 rounded-md mb-4">
-            {validationError}
-          </p>
+          <p className="text-red-600 bg-red-100 p-3 rounded-md mb-4">{validationError}</p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -707,9 +804,12 @@ const SubmitNewProperty = () => {
             {currentPage === totalPages ? (
               <button
                 type="submit"
-                className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                disabled={isLoading}
+                className={`px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 ${
+                  isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                Submit Property
+                {isLoading ? "Submitting..." : "Submit Property"}
               </button>
             ) : (
               <button
@@ -726,18 +826,17 @@ const SubmitNewProperty = () => {
         {showModal && (
           <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Confirm Submission
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Do you want to list this property?
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Submission</h3>
+              <p className="text-gray-600 mb-6">Do you want to list this property?</p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={handleFormSubmit}
-                  className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                  disabled={isLoading}
+                  className={`px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
-                  Yes, Submit
+                  {isLoading ? "Submitting..." : "Yes, Submit"}
                 </button>
                 <button
                   onClick={() => setShowModal(false)}
