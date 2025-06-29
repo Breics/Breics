@@ -65,7 +65,16 @@ const SubmitNewProperty = () => {
     const { name, value, type, checked, files } = e.target;
 
     if (type === "file") {
-      const newFiles = Array.from(files);
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      const newFiles = Array.from(files).filter(file => file.size <= maxSize);
+      if (newFiles.length !== files.length) {
+        setErrorMsg("Some images exceed the 5MB limit.");
+        return;
+      }
+      if (formData.images.length + newFiles.length > 5) {
+        setErrorMsg("You can upload a maximum of 5 images.");
+        return;
+      }
       setFormData((prev) => ({
         ...prev,
         images: [...prev.images, ...newFiles],
@@ -243,6 +252,7 @@ const SubmitNewProperty = () => {
   const handleFormSubmit = async () => {
     setIsLoading(true);
     setErrorMsg("");
+    setValidationError("");
     const error = validateForm();
     if (error) {
       setValidationError(error);
@@ -390,14 +400,14 @@ const SubmitNewProperty = () => {
         setAdditionalRoom({ name: "", description: "" });
         setNewAmenity("");
       } else {
-        setErrorMsg(result.message || "An error occurred during submission.");
+        setErrorMsg(result.message || `Submission failed with status ${res.status}. Please try again.`);
       }
     } catch (err) {
       console.error("Submission error:", err);
       if (err.message.includes("Failed to fetch")) {
-        setErrorMsg("Unable to connect to the server. Please check your network or server status.");
+        setErrorMsg("Unable to connect to the server. The server may be down or experiencing issues. Please try again later.");
       } else {
-        setErrorMsg("Server error: " + err.message);
+        setErrorMsg("An unexpected error occurred: " + err.message);
       }
     } finally {
       setIsLoading(false);
@@ -444,14 +454,17 @@ const SubmitNewProperty = () => {
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
-            <input
+            <select
               name="propertyType"
-              type="text"
-              placeholder="Property type (e.g., apartment)"
               value={formData.propertyType}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
+            >
+              <option value="" disabled>Select property type</option>
+              <option value="apartment">Apartment</option>
+              <option value="house">House</option>
+              <option value="condo">Condo</option>
+            </select>
             <input
               name="price"
               type="number"

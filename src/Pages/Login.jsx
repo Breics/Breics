@@ -118,6 +118,7 @@ const Login = () => {
         if (success) {
           const { token, landlord } = data;
           localStorage.setItem("token", token);
+          console.log(token)
           localStorage.setItem("user_id", landlord.id);
           localStorage.setItem("first_name", landlord.firstName);
           localStorage.setItem("user", JSON.stringify(landlord));
