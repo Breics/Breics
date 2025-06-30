@@ -310,7 +310,7 @@ const SubmitNewProperty = () => {
       let res;
       while (attempt < maxRetries) {
         try {
-          res = await fetch("https://breics-backend.onrender.com/api/properties", {
+          res = await fetch("/api/properties", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
