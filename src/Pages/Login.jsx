@@ -122,7 +122,12 @@ const Login = () => {
           localStorage.setItem("user_id", landlord.id);
           localStorage.setItem("first_name", landlord.firstName);
           localStorage.setItem("user", JSON.stringify(landlord));
-          navigate("/verify");
+          if (landlord.occupation) {
+            navigate("/dashboard")
+          } else {
+
+            navigate("/verify");
+          }
         } else {
           setError("Login failed.");
         }
