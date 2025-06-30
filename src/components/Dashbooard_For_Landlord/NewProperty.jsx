@@ -270,59 +270,23 @@ const SubmitNewProperty = () => {
     formDataToSend.append("yearBuilt", Number(formData.yearBuilt));
     formDataToSend.append("availableFrom", formData.availableFrom);
     formDataToSend.append("availableTo", formData.availableTo);
-    formDataToSend.append("agreement", formData.agreement);
     formDataToSend.append("isActive", formData.isActive);
     formDataToSend.append("mainImageIndex", formData.mainImageIndex);
 
-    // Append location fields
-    Object.entries(formData.location).forEach(([key, value]) => {
-      if (key === "coordinates") {
-        formDataToSend.append("location[coordinates][lat]", Number(value.lat));
-        formDataToSend.append("location[coordinates][lng]", Number(value.lng));
-      } else {
-        formDataToSend.append(`location[${key}]`, value);
-      }
-    });
+    // Append location as JSON string (per Swagger)
+    formDataToSend.append("location", JSON.stringify(formData.location));
 
-    // Append rooms fields
-    Object.entries(formData.rooms).forEach(([key, value]) => {
-      if (key === "additionalRooms") {
-        value.forEach((room, index) => {
-          formDataToSend.append(
-            `rooms[additionalRooms][${index}][name]`,
-            room.name
-          );
-          formDataToSend.append(
-            `rooms[additionalRooms][${index}][description]`,
-            room.description
-          );
-        });
-      } else {
-        formDataToSend.append(`rooms[${key}]`, Number(value) || 0);
-      }
-    });
+    // Append rooms as JSON string (per Swagger)
+    formDataToSend.append("rooms", JSON.stringify(formData.rooms));
 
-    // Append features
-    formData.features.forEach((f, index) => {
-      formDataToSend.append(`features[${index}][name]`, f.name);
-      formDataToSend.append(`features[${index}][description]`, f.description);
-      formDataToSend.append(
-        `features[${index}][isHighlighted]`,
-        f.isHighlighted
-      );
-    });
+    // Append features as JSON string (per Swagger)
+    formDataToSend.append("features", JSON.stringify(formData.features));
 
-    // Append amenities
-    formData.amenities.forEach((a, index) => {
-      formDataToSend.append(`amenities[${index}]`, a);
-    });
+    // Append rules as JSON string (per Swagger)
+    formDataToSend.append("rules", JSON.stringify(formData.rules));
 
-    // Append rules
-    formData.rules.forEach((r, index) => {
-      formDataToSend.append(`rules[${index}][title]`, r.title);
-      formDataToSend.append(`rules[${index}][description]`, r.description);
-      formDataToSend.append(`rules[${index}][isRequired]`, r.isRequired);
-    });
+    // Append amenities as comma-separated string (per Swagger)
+    formDataToSend.append("amenities", formData.amenities.join(","));
 
     // Append images
     formData.images.forEach((img) => {
@@ -341,13 +305,25 @@ const SubmitNewProperty = () => {
       console.log("Submitting form data:", Object.fromEntries(formDataToSend));
       console.log("Images to upload:", formData.images);
 
-      const res = await fetch("https://breics-backend.onrender.com/api/properties", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataToSend,
-      });
+      const maxRetries = 3;
+      let attempt = 0;
+      let res;
+      while (attempt < maxRetries) {
+        try {
+          res = await fetch("https://breics-backend.onrender.com/api/properties", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+            body: formDataToSend,
+          });
+          break; // Exit loop on success
+        } catch (err) {
+          attempt++;
+          if (attempt === maxRetries) throw err;
+        }
+      }
 
       const result = await res.json();
       console.log("Server response:", result);
@@ -405,7 +381,7 @@ const SubmitNewProperty = () => {
     } catch (err) {
       console.error("Submission error:", err);
       if (err.message.includes("Failed to fetch")) {
-        setErrorMsg("Unable to connect to the server. The server may be down or experiencing issues. Please try again later.");
+        setErrorMsg("Unable to connect to the server. The server may be down or blocked by CORS. Please try again later.");
       } else {
         setErrorMsg("An unexpected error occurred: " + err.message);
       }
